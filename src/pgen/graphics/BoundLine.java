@@ -40,8 +40,6 @@ public class BoundLine extends CubicCurve {
         setStrokeWidth(4);
         setStrokeLineCap(StrokeLineCap.ROUND);
         setFill(Color.CORNSILK.deriveColor(0, 1.2, 1, 0));
-
-
     }
 
 
@@ -78,6 +76,17 @@ public class BoundLine extends CubicCurve {
         calCurve(null, 0, 0);
         calArrow(null, 0, 0);
 
+        if (edge.getGraph())
+            text.setFill(Color.RED);
+        else
+            text.setFill(Color.BLACK);
+
+        edge.graphProperty().addListener((observable, oldValue, newValue) ->{
+            if (newValue)
+                text.setFill(Color.RED);
+            else
+                text.setFill(Color.BLACK);
+        });
 
         contextMenu.getItems().addAll(deleteBtn, propertiesBtn);
         propertiesBtn.setOnAction(event -> showPropertiesDialog());
