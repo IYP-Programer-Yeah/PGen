@@ -176,6 +176,7 @@ public class GraphNode extends StackPane {
         node.finalProperty().bind(finalBtn.selectedProperty());
 
         CheckMenuItem startBtn = new CheckMenuItem("Start");
+        startBtn.selectedProperty().set(node.startProperty().getValue());
         startBtn.setOnAction(event1 -> {
             node.getGraph().setStart(node);
         });
