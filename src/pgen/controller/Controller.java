@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Controller
-{
+public class Controller {
 
     @FXML
     public ListView<GraphModel> list;
@@ -57,10 +56,10 @@ public class Controller
 
     DrawPaneController drawPaneController;
 
-    ObservableList<GraphModel> graphs  = FXCollections.observableArrayList();
+    ObservableList<GraphModel> graphs = FXCollections.observableArrayList();
+
     @FXML
-    private void initialize()
-    {
+    private void initialize() {
         drawPaneController = new DrawPaneController(pane);
         CommandManager.init(drawPaneController);
         GraphModel graph = new GraphModel("MAIN");
@@ -74,12 +73,11 @@ public class Controller
         });
         list.setCellFactory(param ->
         {
-            ListCell<GraphModel> cell = new ListCell<GraphModel>()
-            {
+            ListCell<GraphModel> cell = new ListCell<GraphModel>() {
                 @Override
                 protected void updateItem(GraphModel item, boolean empty) {
                     super.updateItem(item, empty);
-                    if (empty || item == null ) {
+                    if (empty || item == null) {
                         setText(null);
                     } else {
                         textProperty().bind(item.nameProperty());
@@ -104,22 +102,18 @@ public class Controller
                 result.ifPresent(s -> cell.getItem().setName(s));
             });
             contextMenu.getItems().addAll(deleteBtn, renameBtn);
-           // cell.textProperty().bind(cell.itemProperty());
+            // cell.textProperty().bind(cell.itemProperty());
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                if (isNowEmpty)
-                {
+                if (isNowEmpty) {
                     cell.setContextMenu(null);
-                    if (cell.getItem() == null)
-                    {
+                    if (cell.getItem() == null) {
                         System.out.println(cell.getIndex());
                         cell.textProperty().unbind();
 //                        cell.setGraphic(null);
                         cell.setText("");
                     }
-                } else
-                {
-                    if (cell.getItem().getName().equals("MAIN"))
-                    {
+                } else {
+                    if (cell.getItem().getName().equals("MAIN")) {
                         deleteBtn.setDisable(true);
                         renameBtn.setDisable(true);
                     }
@@ -147,11 +141,10 @@ public class Controller
         checkMenuItem.setOnAction(this::build);
         exportTableMenuItem.setOnAction(this::prettyTable);
         exportCSVTableMenuItem.setOnAction(this::csvTable);
-        addGraphBtn.setOnAction(event ->graphs.addAll(new GraphModel("New Graph")));
+        addGraphBtn.setOnAction(event -> graphs.addAll(new GraphModel("New Graph")));
     }
 
-    private void build(ActionEvent actionEvent)
-    {
+    private void build(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
         FileChooser chooser = new FileChooser();
@@ -159,16 +152,14 @@ public class Controller
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("npt File", "*.npt"));
         File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
-        if (selectedFile != null)
-        {
+        if (selectedFile != null) {
             List<Message> msgs = parser.buildTable(graphs, selectedFile);
             ShowMessages(msgs);
 
         }
     }
 
-    private void prettyTable(ActionEvent actionEvent)
-    {
+    private void prettyTable(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
         FileChooser chooser = new FileChooser();
@@ -176,16 +167,14 @@ public class Controller
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("prt File", "*.prt"));
         File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
-        if (selectedFile != null)
-        {
+        if (selectedFile != null) {
             List<Message> msgs = parser.buildPrettyTable(graphs, selectedFile);
             ShowMessages(msgs);
 
         }
     }
 
-    private void csvTable(ActionEvent actionEvent)
-    {
+    private void csvTable(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
         FileChooser chooser = new FileChooser();
@@ -193,39 +182,33 @@ public class Controller
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("csv File", "*.csv"));
         File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
-        if (selectedFile != null)
-        {
+        if (selectedFile != null) {
             List<Message> msgs = parser.buildCSVTable(graphs, selectedFile);
             ShowMessages(msgs);
 
         }
     }
 
-    private void ShowMessages(List<Message> msgs)
-    {
-        if (msgs.size() > 0)
-        {
+    private void ShowMessages(List<Message> msgs) {
+        if (msgs.size() > 0) {
             String msg = msgs.stream().map(message -> message.getMessage() + "\n").reduce(String::concat).get();
             MessageAlert alert = new MessageAlert(Alert.AlertType.ERROR, msg, "Error");
             alert.showAndWait();
-        } else
-        {
+        } else {
             MessageAlert alert = new MessageAlert(Alert.AlertType.INFORMATION, "", "Success");
             alert.showAndWait();
         }
     }
 
-    private void load(ActionEvent actionEvent)
-    {
+    private void load(ActionEvent actionEvent) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("JavaFX Projects");
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PGEN Save File (PGS)", "*.pgs")
-                ,new FileChooser.ExtensionFilter("ALL", "*")
+                , new FileChooser.ExtensionFilter("ALL", "*")
         );
         File selectedFile = chooser.showOpenDialog(pane.getScene().getWindow());
-        if (selectedFile != null)
-        {
+        if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
             exportService.load(list);
             drawPaneController.graph = list.getItems().get(0);
@@ -233,31 +216,27 @@ public class Controller
         }
     }
 
-    private void save(ActionEvent actionEvent)
-    {
+    private void save(ActionEvent actionEvent) {
         renumber(null);
         FileChooser chooser = new FileChooser();
         chooser.setTitle("JavaFX Projects");
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PGEN Save File (PGS)", "*.pgs")
-                ,new FileChooser.ExtensionFilter("ALL", "*")
+                , new FileChooser.ExtensionFilter("ALL", "*")
         );
         File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
-        if (selectedFile != null)
-        {
+        if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
             exportService.save(graphs);
         }
     }
 
-    private void export(ActionEvent actionEvent)
-    {
+    private void export(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("JavaFX Projects");
 
         File selectedDirectory = chooser.showDialog(pane.getScene().getWindow());
-        if (selectedDirectory != null)
-        {
+        if (selectedDirectory != null) {
             ExportService exportService = new ExportService(selectedDirectory);
             exportService.exportGraphs(graphs);
             MessageAlert alert = new MessageAlert(Alert.AlertType.INFORMATION, "", "Success");
@@ -266,41 +245,33 @@ public class Controller
         }
     }
 
-    private void onKeyPressed(KeyEvent keyEvent)
-    {
-        if (keyEvent.isControlDown())
-        {
-            if (keyEvent.getCode().equals(KeyCode.N))
-            {
+    private void onKeyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isControlDown()) {
+            if (keyEvent.getCode().equals(KeyCode.N)) {
                 list.getItems().addAll(new GraphModel("2"));
             }
-            if (keyEvent.getCode().equals(KeyCode.Z))
-            {
+            if (keyEvent.getCode().equals(KeyCode.Z)) {
                 CommandManager.getInstance().rollBack();
             }
         }
     }
 
-    public void aboutMenu(ActionEvent actionEvent)
-    {
+    public void aboutMenu(ActionEvent actionEvent) {
         showModal(getClass().getResource("/fxml/AboutPage.fxml"), "About");
 
 
     }
 
-    public void licenseMenu(ActionEvent actionEvent)
-    {
+    public void licenseMenu(ActionEvent actionEvent) {
         showModal(getClass().getResource("/fxml/LicensePage.fxml"), "License");
 
     }
 
-    private void showModal(URL resource, String title)
-    {
+    private void showModal(URL resource, String title) {
         final FXMLLoader loader = new FXMLLoader(resource);
 
         Parent root = null;
-        try
-        {
+        try {
             root = loader.load();
             Scene scene = new Scene(root);
             Stage stage = new Stage();
@@ -308,26 +279,22 @@ public class Controller
             stage.setScene(scene);
             stage.setTitle(title);
             stage.showAndWait();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void renumber(ActionEvent actionEvent)
-    {
+    public void renumber(ActionEvent actionEvent) {
         List<NodeModel> nodes = list.getItems().stream().
                 flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
-        for (int i = 0; i < nodes.size(); i++)
-        {
+        for (int i = 0; i < nodes.size(); i++) {
             nodes.get(i).setId(i);
         }
         NodeModel.setCounter(nodes.size());
         drawPaneController.refresh();
     }
 
-    public void manualMenu(ActionEvent actionEvent)
-    {
+    public void manualMenu(ActionEvent actionEvent) {
         showModal(getClass().getResource("/fxml/HelpPage.fxml"), "Help");
     }
 }

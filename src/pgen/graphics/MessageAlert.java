@@ -10,14 +10,12 @@ import javafx.scene.layout.Priority;
 /**
  * Created by Pouya Payandeh on 9/18/2016.
  */
-public class MessageAlert extends Alert
-{
-    public MessageAlert(@NamedArg("alertType") AlertType alertType)
-    {
+public class MessageAlert extends Alert {
+    public MessageAlert(@NamedArg("alertType") AlertType alertType) {
         super(alertType);
     }
-    public MessageAlert(AlertType alertType, String text,String header)
-    {
+
+    public MessageAlert(AlertType alertType, String text, String header) {
         super(alertType);
         setTitle("Messages Dialog");
         setHeaderText(header);

@@ -10,53 +10,31 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * @author Thedath Oudarya
  */
 public final class Block {
 
-    protected static int nextIndex = 0;
-
-    private Board board;
-
-    private final int index;
-
-    private int width;
-
-    private int height;
-
-    private boolean allowGrid;
-
-    private int blockAlign;
-
     public static final int BLOCK_LEFT = 1;
-
     public static final int BLOCK_CENTRE = 2;
-
     public static final int BLOCK_RIGHT = 3;
-
-    private String data;
-
-    private int dataAlign;
-
     public static final int DATA_TOP_LEFT = 4;
-
     public static final int DATA_TOP_MIDDLE = 5;
-
     public static final int DATA_TOP_RIGHT = 6;
-
     public static final int DATA_MIDDLE_LEFT = 7;
-
     public static final int DATA_CENTER = 8;
-
     public static final int DATA_MIDDLE_RIGHT = 9;
-
     public static final int DATA_BOTTOM_LEFT = 10;
-
     public static final int DATA_BOTTOM_MIDDLE = 11;
-
     public static final int DATA_BOTTOM_RIGHT = 12;
-
+    protected static int nextIndex = 0;
+    private final int index;
+    private Board board;
+    private int width;
+    private int height;
+    private boolean allowGrid;
+    private int blockAlign;
+    private String data;
+    private int dataAlign;
     private int x;
 
     private int y;

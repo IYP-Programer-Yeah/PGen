@@ -6,19 +6,18 @@
 package wagu;
 
 /**
- *
  * @author Thedath Oudarya
  */
 class Charr {
-    
+
     protected static final char S = ' ';
-    
+
     protected static final char NL = '\n';
-    
+
     protected static final char P = '+';
-    
+
     protected static final char D = '-';
-    
+
     protected static final char VL = '|';
 
     private final int x;

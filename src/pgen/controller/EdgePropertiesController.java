@@ -12,27 +12,7 @@ import pgen.model.EdgeModel;
 /**
  * Created by Pouya Payandeh on 8/31/2016.
  */
-public class EdgePropertiesController
-{
-    EdgeModel edge;
-
-    public void init(EdgeModel edge)
-    {
-        this.edge = edge;
-        tokenText.setText(edge.getToken());
-        funcText.setText(edge.getFunc());
-        globalChk.setSelected(edge.getGlobal());
-        graphChk.setSelected(edge.getGraph());
-        okBtn.setOnMouseClicked(event ->
-        {
-            Stage stage = (Stage) okBtn.getScene().getWindow();
-            CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge ,tokenText.getText() , funcText.getText(),graphChk.isSelected(),globalChk.isSelected()));
-            stage.close();
-        }
-        );
-    }
-
-
+public class EdgePropertiesController {
     @FXML
     public Button okBtn;
     @FXML
@@ -43,5 +23,21 @@ public class EdgePropertiesController
     public CheckBox graphChk;
     @FXML
     public CheckBox globalChk;
+    EdgeModel edge;
+
+    public void init(EdgeModel edge) {
+        this.edge = edge;
+        tokenText.setText(edge.getToken());
+        funcText.setText(edge.getFunc());
+        globalChk.setSelected(edge.getGlobal());
+        graphChk.setSelected(edge.getGraph());
+        okBtn.setOnMouseClicked(event ->
+                {
+                    Stage stage = (Stage) okBtn.getScene().getWindow();
+                    CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge, tokenText.getText(), funcText.getText(), graphChk.isSelected(), globalChk.isSelected()));
+                    stage.close();
+                }
+        );
+    }
 
 }

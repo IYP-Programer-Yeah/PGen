@@ -5,20 +5,18 @@ import pgen.model.EdgeModel;
 /**
  * Created by Pouya Payandeh on 9/6/2016.
  */
-public class EdgeJSON
-{
-    int start , end;
-    String token,func;
+public class EdgeJSON {
+    int start, end;
+    String token, func;
     double anchorX;
     double anchorY;
     boolean isGraph;
     boolean isGlobal;
 
-    public EdgeJSON()
-    {
+    public EdgeJSON() {
     }
-    public EdgeJSON(EdgeModel model)
-    {
+
+    public EdgeJSON(EdgeModel model) {
         start = model.getStart().getId();
         end = model.getEnd().getId();
         token = model.getToken();

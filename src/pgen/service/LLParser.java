@@ -17,13 +17,11 @@ import java.util.stream.Collectors;
 /**
  * Created by Pouya Payandeh on 9/18/2016.
  */
-public class LLParser
-{
+public class LLParser {
     final String EPSILON = "$epsilon";
     final String EOF = "$";
 
-    private List<Message> check(List<GraphModel> graphs)
-    {
+    private List<Message> check(List<GraphModel> graphs) {
         List<Message> messages = new ArrayList<>();
         Set<String> extractExpectedGraphs = graphs.stream().flatMap(graph -> graph.getEdges().stream()).
                 filter(EdgeModel::getGraph).map(EdgeModel::getToken).collect(Collectors.toSet());
@@ -48,8 +46,7 @@ public class LLParser
         return messages;
     }
 
-    public LLCell[][] buildTable(List<GraphModel> graphs, Map<String, Integer> tokensInt) throws TableException
-    {
+    public LLCell[][] buildTable(List<GraphModel> graphs, Map<String, Integer> tokensInt) throws TableException {
         List<Message> msgs = check(graphs);
         if (msgs.size() > 0)
             throw new TableException(msgs);
@@ -73,17 +70,14 @@ public class LLParser
         List<NodeModel> nodes = graphs.stream().
                 flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
 
-        for (int i = 0; i < nodes.size(); i++)
-        {
+        for (int i = 0; i < nodes.size(); i++) {
             nodes.get(i).setId(i);
         }
 
 
         int seti = 0;
-        for (String s : tokens)
-        {
-            if (tokensInt.put(s, seti) != null)
-            {
+        for (String s : tokens) {
+            if (tokensInt.put(s, seti) != null) {
                 if (s.startsWith("$"))
                     msgs.add(new Message(Message.ERROR, String.format("All string starting with $ are predefined Tokens")));
                 else
@@ -93,10 +87,8 @@ public class LLParser
 
         }
 
-        for (String s : vars)
-        {
-            if (tokensInt.put(s, seti) != null)
-            {
+        for (String s : vars) {
+            if (tokensInt.put(s, seti) != null) {
                 msgs.add(new Message(Message.ERROR, String.format("%s Should be either a Token or a Graph", s)));
             }
             seti++;
@@ -109,15 +101,12 @@ public class LLParser
             for (int j = 0; j < table[0].length; j++)
                 table[i][j] = new LLCell(LLCell.ERROR, -1, "");
 
-        for (GraphModel graphModel : graphs)
-        {
+        for (GraphModel graphModel : graphs) {
 
-            if (graphModel.getName().equals("MAIN"))
-            {
+            if (graphModel.getName().equals("MAIN")) {
                 graphModel.getNodes().stream().filter(NodeModel::getFinal).
                         forEach(nodeModel -> table[nodeModel.getId()][0] = new LLCell(LLCell.ACCEPT, -1, ""));
-            } else
-            {
+            } else {
                 graphModel.getNodes().stream().filter(NodeModel::getFinal).
                         forEach(nodeModel ->
                         {
@@ -134,49 +123,43 @@ public class LLParser
         {
             node.getAdjacent().forEach(edge ->
             {
-                if (edge.getGraph())
-                {
+                if (edge.getGraph()) {
                     table[node.getId()][tokensInt.get(edge.getToken())] = new LLCell(LLCell.GOTO, edge.getEnd().getId(), edge.getFunc());
                     Set<String> first = firsts.get(edge.getToken());
-                    if(first.contains(EPSILON))
-                    {
+                    if (first.contains(EPSILON)) {
                         first = new HashSet<>(first);
-                        first.addAll(firsts.get("$"+edge.getEnd().getId()));
+                        first.addAll(firsts.get("$" + edge.getEnd().getId()));
                     }
                     first.forEach(s ->
                     {
-                        if (!s.equals(EPSILON))
-                        {
+                        if (!s.equals(EPSILON)) {
                             if (table[node.getId()][tokensInt.get(s)].action == LLCell.PUSH_GOTO ||
                                     table[node.getId()][tokensInt.get(s)].action == LLCell.SHIFT)
                                 msgs.add(new Message(Message.ERROR, String.format("First Set Collision in node %d and token \"%s\"", node.getId(), s)));
                             table[node.getId()][tokensInt.get(s)] = new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
 
 
-                        } else
-                        {
+                        } else {
 //                            for (int i = 0; i < table[node.getId()].length; i++)
 //                                if (table[node.getId()][i].action == LLCell.ERROR)
 //                                    table[node.getId()][i] = new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
 //
 
-                           if(firsts.get("$"+edge.getEnd().getId()).contains(EPSILON))
-                            {
-                                if(node.getId() == 274)
+                            if (firsts.get("$" + edge.getEnd().getId()).contains(EPSILON)) {
+                                if (node.getId() == 274)
                                     System.out.println("HERTE");
-                                follows.get("$"+node.getId()).forEach(ss ->
+                                follows.get("$" + node.getId()).forEach(ss ->
                                         {
                                             if (table[node.getId()][tokensInt.get(ss)].action == LLCell.PUSH_GOTO ||
                                                     table[node.getId()][tokensInt.get(ss)].action == LLCell.SHIFT)
                                                 msgs.add(new Message(Message.ERROR, String.format("Follow Set Collision in node %d and token \"%s\"", node.getId(), ss)));
-                                                table[node.getId()][tokensInt.get(ss)] =new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
+                                            table[node.getId()][tokensInt.get(ss)] = new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
                                         }
                                 );
                             }
                         }
                     });
-                } else
-                {
+                } else {
                     if (table[node.getId()][tokensInt.get(edge.getToken())].action == LLCell.PUSH_GOTO ||
                             table[node.getId()][tokensInt.get(edge.getToken())].action == LLCell.SHIFT)
                         msgs.add(new Message(Message.ERROR, String.format("First Set Collision in node %d and token \"%s\"", node.getId(), edge.getToken())));
@@ -189,36 +172,29 @@ public class LLParser
         return table;
     }
 
-    public List<Message> buildTable(List<GraphModel> graphs, File file)
-    {
+    public List<Message> buildTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
-        try
-        {
+        try {
             LLCell[][] table = buildTable(graphs, tokensInt);
             List<NodeModel> nodes = graphs.stream().
                     flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
-            try (PrintWriter writer = new PrintWriter(file))
-            {
+            try (PrintWriter writer = new PrintWriter(file)) {
                 writer.printf("%d %d\n", nodes.size(), table[0].length);
                 List<String> list = tokensInt.keySet().stream().sorted((o1, o2) -> tokensInt.get(o1) - tokensInt.get(o2)).collect(Collectors.toList());
                 list.forEach(s -> writer.printf("%s ", s));
                 writer.println();
-                for (LLCell[] llCells : table)
-                {
+                for (LLCell[] llCells : table) {
 
-                    for (LLCell llCell : llCells)
-                    {
+                    for (LLCell llCell : llCells) {
                         writer.print(llCell + " ");
                     }
                     writer.println();
                 }
                 writer.println();
-            } catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        } catch (TableException e)
-        {
+        } catch (TableException e) {
 
             return e.getMsg();
         }
@@ -226,21 +202,17 @@ public class LLParser
         return new ArrayList<>();
     }
 
-    public List<Message> buildPrettyTable(List<GraphModel> graphs, File file)
-    {
+    public List<Message> buildPrettyTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
-        try
-        {
+        try {
             LLCell[][] table = buildTable(graphs, tokensInt);
-            try (PrintWriter writer = new PrintWriter(file))
-            {
+            try (PrintWriter writer = new PrintWriter(file)) {
                 List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 List<String> headersList = new ArrayList<>(list);
                 headersList.add(0, "States");
                 writer.println();
                 List<Integer> colAlignList = new ArrayList<>();
-                for (int i = 0; i < headersList.size(); i++)
-                {
+                for (int i = 0; i < headersList.size(); i++) {
                     colAlignList.add(Block.DATA_CENTER);
                 }
                 List<List<String>> rowsList = BuildStringTable(tokensInt, table);
@@ -252,35 +224,27 @@ public class LLParser
                 String tableString = board.setInitialBlock(ta.tableToBlocks()).build().getPreview();
                 writer.println(tableString);
                 writer.println();
-            } catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        } catch (TableException e)
-        {
+        } catch (TableException e) {
             return e.getMsg();
         }
 
         return new ArrayList<>();
     }
 
-    private List<List<String>> BuildStringTable(Map<String, Integer> tokensInt, LLCell[][] table)
-    {
+    private List<List<String>> BuildStringTable(Map<String, Integer> tokensInt, LLCell[][] table) {
         int state = 0;
         List<List<String>> rowsList = new ArrayList<>();
-        for (LLCell[] llCells : table)
-        {
+        for (LLCell[] llCells : table) {
             List<String> row = new ArrayList<>();
             row.add(String.valueOf(state++));
-            for (LLCell llCell : llCells)
-            {
+            for (LLCell llCell : llCells) {
                 String r = llCell.getActionString();
-                if (llCell.action == LLCell.RETURN)
-                {
-                    for (Map.Entry<String, Integer> pair : tokensInt.entrySet())
-                    {
-                        if (pair.getValue() == llCell.target)
-                        {
+                if (llCell.action == LLCell.RETURN) {
+                    for (Map.Entry<String, Integer> pair : tokensInt.entrySet()) {
+                        if (pair.getValue() == llCell.target) {
                             r += " " + pair.getKey();
                             break;
                         }
@@ -299,21 +263,17 @@ public class LLParser
         return rowsList;
     }
 
-    public List<Message> buildCSVTable(List<GraphModel> graphs, File file)
-    {
+    public List<Message> buildCSVTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
-        try
-        {
+        try {
             LLCell[][] table = buildTable(graphs, tokensInt);
-            try (PrintWriter writer = new PrintWriter(file))
-            {
+            try (PrintWriter writer = new PrintWriter(file)) {
                 StringBuffer blocksText = new StringBuffer();
                 List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 List<String> headersList = new ArrayList<>(list);
                 headersList.add(0, "States");
                 List<Integer> colAlignList = new ArrayList<>();
-                for (int i = 0; i < headersList.size(); i++)
-                {
+                for (int i = 0; i < headersList.size(); i++) {
                     colAlignList.add(Block.DATA_CENTER);
                 }
                 List<List<String>> rowsList = BuildStringTable(tokensInt, table);
@@ -327,8 +287,7 @@ public class LLParser
 
                 Scanner sc = new Scanner(blocksText.toString());
                 boolean printedInLine = false;
-                while (sc.hasNext())
-                {
+                while (sc.hasNext()) {
                     String line = sc.nextLine();
                     line = line.trim();
                     if (line.equals("") || line.charAt(0) == '+')
@@ -337,8 +296,7 @@ public class LLParser
                     if (items.length == 0)
                         continue;
 
-                    for (String item : items)
-                    {
+                    for (String item : items) {
                         String fixedItem = item.trim();
                         if (fixedItem.equals(""))
                             continue;
@@ -353,28 +311,22 @@ public class LLParser
                 }
                 writer.write(System.lineSeparator());
 
-            } catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        } catch (TableException e)
-        {
+        } catch (TableException e) {
             return e.getMsg();
         }
 
         return new ArrayList<>();
     }
 
-    private Map<String, GraphModel> getVarGraphs(List<GraphModel> graphs, Set<String> vars)
-    {
+    private Map<String, GraphModel> getVarGraphs(List<GraphModel> graphs, Set<String> vars) {
         Map<String, GraphModel> varGraph = new HashMap<>();
 
-        for (String s : vars)
-        {
-            for (GraphModel g : graphs)
-            {
-                if (g.getName().equals(s))
-                {
+        for (String s : vars) {
+            for (GraphModel g : graphs) {
+                if (g.getName().equals(s)) {
                     varGraph.put(s, g);
                     break;
                 }
@@ -383,8 +335,7 @@ public class LLParser
         return varGraph;
     }
 
-    public Map<String, Set<String>> getFirstSets(List<GraphModel> graphs)
-    {
+    public Map<String, Set<String>> getFirstSets(List<GraphModel> graphs) {
         Set<String> vars = graphs.stream().
                 flatMap(graph -> graph.getEdges().stream()).filter(edge -> edge.getGraph()).
                 map(EdgeModel::getToken).collect(Collectors.toSet());
@@ -407,61 +358,51 @@ public class LLParser
                             .map(EdgeModel::getToken).collect(Collectors.toSet()));
 
                     nameNode.put("$" + n.getId(), n);
-                    if (n.getFinal())
-                    {
+                    if (n.getFinal()) {
                         Set<String> first = firsts.get("$" + n.getId());
                         first.add(EPSILON);
                     }
                 }
         );
-        for (Map.Entry<String, GraphModel> entry : varGraph.entrySet())
-        {
-            try
-            {
+        for (Map.Entry<String, GraphModel> entry : varGraph.entrySet()) {
+            try {
                 firsts.put(entry.getKey(), entry.getValue().getStart().getAdjacent().stream().filter(edgeModel -> !edgeModel.getGraph())
                         .map(EdgeModel::getToken).collect(Collectors.toSet()));
                 nameNode.put(entry.getKey(), entry.getValue().getStart());
 
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println("");
             }
 
         }
 
         boolean flag = true;
-        while (flag)
-        {
+        while (flag) {
             flag = false;
 
-            for (Map.Entry<String, NodeModel> entry : nameNode.entrySet())
-            {
-                for (EdgeModel edge : entry.getValue().getAdjacent())
-                {
+            for (Map.Entry<String, NodeModel> entry : nameNode.entrySet()) {
+                for (EdgeModel edge : entry.getValue().getAdjacent()) {
                     Set<String> first = firsts.get(entry.getKey());
-                    first.addAll(firsts.get("$"+edge.getStart().getId()));
-                    firsts.get("$"+edge.getStart().getId()).addAll(first);
+                    first.addAll(firsts.get("$" + edge.getStart().getId()));
+                    firsts.get("$" + edge.getStart().getId()).addAll(first);
 
-                    if (edge.getGraph())
-                    {
+                    if (edge.getGraph()) {
 
 //                        Set<String> first = firsts.get(entry.getKey());
-                        first.addAll(firsts.get("$"+edge.getStart().getId()));
-                        firsts.get("$"+edge.getStart().getId()).addAll(first);
+                        first.addAll(firsts.get("$" + edge.getStart().getId()));
+                        firsts.get("$" + edge.getStart().getId()).addAll(first);
 
 
                         Set<String> first2 = new HashSet<>(firsts.get(edge.getToken()));
                         Set<String> first3 = firsts.get("$" + edge.getEnd().getId());
-                        if (first2.contains(EPSILON))
-                        {
-                          //  first3.remove(EPSILON);
+                        if (first2.contains(EPSILON)) {
+                            //  first3.remove(EPSILON);
                             if (first.addAll(first3))
                                 flag = true;
                         }
                         first2.remove(EPSILON);
                         if (first.addAll(first2))
                             flag = true;
-
 
 
                     }
@@ -471,8 +412,7 @@ public class LLParser
         return firsts;
     }
 
-    public Map<String, Set<String>> getFollowSets(List<GraphModel> graphs, Map<String, Set<String>> firsts)
-    {
+    public Map<String, Set<String>> getFollowSets(List<GraphModel> graphs, Map<String, Set<String>> firsts) {
 
         Map<String, Set<String>> follows = new HashMap<>();
         Set<String> vars = graphs.stream().
@@ -498,14 +438,11 @@ public class LLParser
                 }
         );
 
-        for (Map.Entry<String, GraphModel> entry : varGraph.entrySet())
-        {
-            try
-            {
+        for (Map.Entry<String, GraphModel> entry : varGraph.entrySet()) {
+            try {
                 nameNode.put(entry.getKey(), entry.getValue().getStart());
                 follows.put(entry.getKey(), new HashSet<>());
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println("");
             }
 
@@ -514,18 +451,14 @@ public class LLParser
         follows.get("$" + mainId).add(EOF);
         follows.get("MAIN").add(EOF);
         boolean flag = true;
-        while (flag)
-        {
+        while (flag) {
             flag = false;
-            for (Map.Entry<String, NodeModel> entry : nameNode.entrySet())
-            {
-                for (EdgeModel edge : entry.getValue().getAdjacent())
-                {
+            for (Map.Entry<String, NodeModel> entry : nameNode.entrySet()) {
+                for (EdgeModel edge : entry.getValue().getAdjacent()) {
                     Set<String> follow = follows.get(entry.getKey());
-                    follow.addAll(follows.get("$"+edge.getStart().getId()));
-                    follows.get("$"+edge.getStart().getId()).addAll(follow);
-                    if (edge.getGraph())
-                    {
+                    follow.addAll(follows.get("$" + edge.getStart().getId()));
+                    follows.get("$" + edge.getStart().getId()).addAll(follow);
+                    if (edge.getGraph()) {
 //                        Set<String> follow = follows.get(entry.getKey());
                         Set<String> follow2 = follows.get(edge.getToken());
 
@@ -537,16 +470,14 @@ public class LLParser
                         Set<String> first3 = firsts.get("$" + edge.getEnd().getId());
                         Set<String> follow3 = follows.get("$" + edge.getEnd().getId());
 
-                        if (follow2.addAll(first3))
-                        {
+                        if (follow2.addAll(first3)) {
                             flag = true;
                         }
-                        if (first3.contains(EPSILON))
-                        {
+                        if (first3.contains(EPSILON)) {
                             if (follow2.addAll(follow))
                                 flag = true;
                         }
-                       // follow2.remove(EPSILON);
+                        // follow2.remove(EPSILON);
                     }
                 }
             }

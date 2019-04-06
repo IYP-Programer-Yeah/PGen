@@ -9,23 +9,19 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
+    public static void main(String[] args) {
+        launch(args);
+    }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainWindow.fxml"));
         primaryStage.setTitle("PGen");
         primaryStage.getIcons().add(
                 new Image(
-                        getClass().getResourceAsStream( "/fxml/Icon.png" )));
-     //   primaryStage.setMaximized(true);
+                        getClass().getResourceAsStream("/fxml/Icon.png")));
+
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-    }
-
-
-    public static void main(String[] args)
-    {
-        launch(args);
-
     }
 }

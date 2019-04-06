@@ -9,36 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Thedath Oudarya
  */
 public final class Table {
-    
-    private Board board;
-
-    private final int tableWidth;
-
-    private List<String> headersList;
-
-    private List<List<String>> rowsList;
-
-    private List<Integer> colWidthsList;
-
-    private List<Integer> colAlignsList;
-
-    private int headerHeight;
-
-    private int rowHeight;
-
-    private int gridMode;
-
-    private Block initialTableBlock;
 
     public final static int GRID_NON = 13;
-
     public final static int GRID_FULL = 14;
-
     public final static int GRID_COLUMN = 15;
+    private final int tableWidth;
+    private Board board;
+    private List<String> headersList;
+    private List<List<String>> rowsList;
+    private List<Integer> colWidthsList;
+    private List<Integer> colAlignsList;
+    private int headerHeight;
+    private int rowHeight;
+    private int gridMode;
+    private Block initialTableBlock;
 
     public Table(Board board, int tableWidth, List<String> headersList, List<List<String>> rowsList) {
         this.board = board;
@@ -227,16 +214,16 @@ public final class Table {
                     }
                 }
             }
-        } else {            
+        } else {
             for (int i = 0; i < headersList.size(); i++) {
                 String columnData = "";
                 for (int j = 0; j < rowsList.size(); j++) {
                     String rowData = rowsList.get(j).get(i);
                     columnData = columnData.concat(rowData).concat("\n");
                 }
-                Block block = new Block(board, colWidthsList.get(i), rowsList.size(),columnData);
+                Block block = new Block(board, colWidthsList.get(i), rowsList.size(), columnData);
                 int alignIndex = colAlignsList.get(i);
-                    block.setDataAlign(alignIndex);
+                block.setDataAlign(alignIndex);
                 if (initialTableBlock.getBelowBlock() == null) {
                     initialTableBlock.setBelowBlock(block);
                 } else {
@@ -246,8 +233,8 @@ public final class Table {
         }
         return initialTableBlock;
     }
-    
-    public Table invalidate(){
+
+    public Table invalidate() {
         initialTableBlock = null;
         return this;
     }

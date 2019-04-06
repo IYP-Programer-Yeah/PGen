@@ -9,24 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Thedath Oudarya
  */
 public class Board {
-    
-    protected boolean showBlockIndex;
-
-    protected int boardWidth;
-
-    private Block initialBlock;
-
-    private List<Charr> charrs;
-
-    private String preview;
 
     public static final int APPEND_RIGHT = 16;
-
     public static final int APPEND_BELOW = 17;
+    protected boolean showBlockIndex;
+    protected int boardWidth;
+    private Block initialBlock;
+    private List<Charr> charrs;
+    private String preview;
 
     public Board(int boardWidth) {
         this.boardWidth = boardWidth;
@@ -47,7 +40,7 @@ public class Board {
 
     public void showBlockIndex(boolean showBlockIndex) {
         this.showBlockIndex = showBlockIndex;
-    }        
+    }
 
     public Board appendTableTo(int appendableBlockIndex, int appendableDirection, Table table) {
         Block tableBlock = table.tableToBlocks();
@@ -171,9 +164,9 @@ public class Board {
 //                    preview = preview.concat(point);
                 }
 //                preview = preview.concat(String.valueOf(Charr.NL));
-                    builder.append(String.valueOf(Charr.NL));
+                builder.append(String.valueOf(Charr.NL));
             }
-            preview =builder.toString();
+            preview = builder.toString();
         }
 
         return this;

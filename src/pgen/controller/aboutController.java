@@ -7,12 +7,10 @@ import javafx.stage.Stage;
 /**
  * Created by Pouya Payandeh on 10/14/2016.
  */
-public class aboutController
-{
+public class aboutController {
     public AnchorPane pane;
 
-    public void close(ActionEvent actionEvent)
-    {
-        ((Stage)pane.getScene().getWindow()).close();
+    public void close(ActionEvent actionEvent) {
+        ((Stage) pane.getScene().getWindow()).close();
     }
 }

@@ -5,8 +5,7 @@ import pgen.model.EdgeModel;
 /**
  * Created by Pouya Payandeh on 9/3/2016.
  */
-public class ChangeEdgeCmd implements Command
-{
+public class ChangeEdgeCmd implements Command {
     EdgeModel edgeModel;
     String token;
     String func;
@@ -19,8 +18,7 @@ public class ChangeEdgeCmd implements Command
     Boolean _graph;
     Boolean _global;
 
-    public ChangeEdgeCmd(EdgeModel edgeModel, String token, String func,Boolean graph,Boolean global)
-    {
+    public ChangeEdgeCmd(EdgeModel edgeModel, String token, String func, Boolean graph, Boolean global) {
         this.edgeModel = edgeModel;
         this.token = token;
         this.func = func;
@@ -29,13 +27,11 @@ public class ChangeEdgeCmd implements Command
     }
 
     @Override
-    public void apply()
-    {
+    public void apply() {
         _token = edgeModel.getToken();
         _func = edgeModel.getFunc();
         _graph = edgeModel.getGraph();
-        _global  =edgeModel.getGlobal();
-
+        _global = edgeModel.getGlobal();
 
 
         edgeModel.setFunc(func);
@@ -46,8 +42,7 @@ public class ChangeEdgeCmd implements Command
     }
 
     @Override
-    public void rollBack()
-    {
+    public void rollBack() {
 
         edgeModel.setFunc(_func);
         edgeModel.setToken(_token);

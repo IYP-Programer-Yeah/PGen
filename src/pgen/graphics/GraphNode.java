@@ -23,74 +23,56 @@ import pgen.model.NodeModel;
 /**
  * Created by Pouya Payandeh on 8/20/2016.
  */
-public class GraphNode extends StackPane
-{
+public class GraphNode extends StackPane {
     private final double radius = 10;
     Circle circle;
     Text text;
-
-    public NodeModel getNode()
-    {
-        return node;
-    }
-
     NodeModel node;
     Color color = Color.AQUA;
-
     EventHandler<MouseEvent> onShiftClick;
-
-
     double mouseX;
     double mouseY;
+    ContextMenu contextMenu = new ContextMenu();
 
-    public GraphNode(NodeModel n)
-    {
+    public GraphNode(NodeModel n) {
         this.node = n;
         circle = new Circle(n.getX(), n.getY(), radius);
 
-        circle.setFill(color.deriveColor(1, 1, 1,1));
+        circle.setFill(color.deriveColor(1, 1, 1, 1));
         circle.setStroke(color);
         circle.setStrokeWidth(3);
         circle.setStrokeType(StrokeType.OUTSIDE);
 
-        setLayoutX(n.getX() -radius);
-        setLayoutY(n.getY() -radius);
+        setLayoutX(n.getX() - radius);
+        setLayoutY(n.getY() - radius);
         n.xProperty().bind(layoutXProperty().add(radius));
         n.yProperty().bind(layoutYProperty().add(radius));
 
-        if(n.getFinal())
-        {
+        if (n.getFinal()) {
             circle.setFill(Color.RED);
-        }else
-        {
-            circle.setFill(color.deriveColor(1, 1, 1,1));
+        } else {
+            circle.setFill(color.deriveColor(1, 1, 1, 1));
         }
-        if(n.getGraph() != null && n.getGraph().getStart() ==n)
-        {
+        if (n.getGraph() != null && n.getGraph().getStart() == n) {
             circle.setStroke(Color.GREEN);
-        }else
-        {
+        } else {
             circle.setStroke(color);
         }
 
         n.finalProperty().addListener((observable, oldValue, newValue) ->
         {
-            if(newValue)
-            {
+            if (newValue) {
                 circle.setFill(Color.RED);
-            }else
-            {
-                circle.setFill(color.deriveColor(1, 1, 1,1));
+            } else {
+                circle.setFill(color.deriveColor(1, 1, 1, 1));
             }
         });
 
         n.startProperty().addListener((observable, oldValue, newValue) ->
         {
-            if(newValue)
-            {
+            if (newValue) {
                 circle.setStroke(Color.GREEN);
-            }else
-            {
+            } else {
                 circle.setStroke(color);
             }
         });
@@ -114,28 +96,27 @@ public class GraphNode extends StackPane
 //        this.onClick = onClick;
 //    }
 
-    public EventHandler<MouseEvent> getOnShiftClick()
-    {
+    public NodeModel getNode() {
+        return node;
+    }
+
+    public EventHandler<MouseEvent> getOnShiftClick() {
         return onShiftClick;
     }
 
-    public void setOnShiftClick(EventHandler<MouseEvent> onShiftClick)
-    {
+    public void setOnShiftClick(EventHandler<MouseEvent> onShiftClick) {
         this.onShiftClick = onShiftClick;
     }
 
     // make a node movable by dragging it around with the mouse.
-    private void enableDrag()
-    {
+    private void enableDrag() {
         setOnMousePressed(event -> {
-            if (!event.isShiftDown())
-            {
+            if (!event.isShiftDown()) {
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
                 System.out.println(mouseY);
-            } else
-            {
-                  //  System.out.println(node.id);
+            } else {
+                //  System.out.println(node.id);
 
             }
             event.consume();
@@ -144,20 +125,17 @@ public class GraphNode extends StackPane
 
 //                onClick.handle(event);
             System.out.println("Here");
-            if(event.isShiftDown() && onShiftClick != null)
-            {
+            if (event.isShiftDown() && onShiftClick != null) {
                 onShiftClick.handle(event);
             }
-            if(event.getButton().equals(MouseButton.SECONDARY))
-            {
+            if (event.getButton().equals(MouseButton.SECONDARY)) {
 
                 showContextMenu(event);
             }
             event.consume();
         });
         setOnMouseDragged(event -> {
-            if (!event.isShiftDown())
-            {
+            if (!event.isShiftDown()) {
                 double deltaX = event.getSceneX() - mouseX;
                 double deltaY = event.getSceneY() - mouseY;
                 Bounds b = getBoundsInParent();
@@ -168,9 +146,7 @@ public class GraphNode extends StackPane
                 relocate(getLayoutX() + deltaX, getLayoutY() + deltaY);
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
-            }
-            else
-            {
+            } else {
 
             }
         });
@@ -179,21 +155,18 @@ public class GraphNode extends StackPane
             mouseEvent.consume();
         });
         setOnMouseEntered(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown())
-            {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
         });
         setOnMouseExited(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown())
-            {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
     }
-    ContextMenu contextMenu = new ContextMenu();
-    private void showContextMenu(MouseEvent event)
-    {
+
+    private void showContextMenu(MouseEvent event) {
 
         MenuItem deleteBtn = new MenuItem("Delete");
 
@@ -211,8 +184,7 @@ public class GraphNode extends StackPane
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
     }
 
-    private void delete(ActionEvent actionEvent)
-    {
+    private void delete(ActionEvent actionEvent) {
         CommandManager.getInstance().applyCommand(new DeleteNodeCmd(node));
     }
 
