@@ -1,10 +1,8 @@
 package pgen.controller;
 
-import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import pgen.graphics.Anchor;
 import pgen.model.EdgeModel;
 import pgen.model.GraphModel;
 import pgen.graphics.GraphNode;
