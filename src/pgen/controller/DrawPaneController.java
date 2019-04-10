@@ -4,6 +4,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import pgen.cmd.Command;
+import pgen.cmd.CommandManager;
 import pgen.cmd.MakeEdgeCmd;
 import pgen.cmd.MakeNodeCmd;
 import pgen.graphics.BoundLine;
@@ -55,10 +56,7 @@ public class DrawPaneController implements RefreshableController {
         if (firstNode == null)
             firstNode = node;
         else {
-            Command cmd = null;
-            cmd = new MakeEdgeCmd(firstNode, node);
-            cmd.apply();
-            refresh();
+            CommandManager.getInstance().applyCommand( new MakeEdgeCmd(firstNode, node));
             firstNode = node;
             System.out.println("new Edge");
         }
@@ -67,10 +65,7 @@ public class DrawPaneController implements RefreshableController {
 
     private void mouseClickEvent(MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-            Command cmd = null;
-            cmd = new MakeNodeCmd(graph, mouseEvent.getX(), mouseEvent.getY());
-            cmd.apply();
-            refresh();
+            CommandManager.getInstance().applyCommand(new MakeNodeCmd(graph, mouseEvent.getX(), mouseEvent.getY()));
         }
     }
 }

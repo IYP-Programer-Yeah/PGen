@@ -13,19 +13,17 @@ public class MakeEdgeCmd implements Command {
     public MakeEdgeCmd(NodeModel start, NodeModel end) {
         this.start = start;
         this.end = end;
+        edge = new EdgeModel(start, end);
     }
 
     @Override
     public void apply() {
-
-        edge = new EdgeModel(start, end);
         start.getAdjacent().add(edge);
-
     }
 
     @Override
 
     public void rollBack() {
-
+        start.getAdjacent().remove(edge);
     }
 }

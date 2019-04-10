@@ -250,8 +250,11 @@ public class Controller {
             if (keyEvent.getCode().equals(KeyCode.N)) {
                 list.getItems().addAll(new GraphModel("2"));
             }
-            if (keyEvent.getCode().equals(KeyCode.Z)) {
+            if (keyEvent.getCode().equals(KeyCode.Z) && !keyEvent.isShiftDown()) {
                 CommandManager.getInstance().rollBack();
+            }
+            if (keyEvent.isShiftDown() && keyEvent.getCode().equals(KeyCode.Z)) {
+                CommandManager.getInstance().redoCommand();
             }
         }
     }

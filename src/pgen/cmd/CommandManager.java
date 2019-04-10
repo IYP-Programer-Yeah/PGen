@@ -10,11 +10,13 @@ import java.util.Stack;
 public class CommandManager {
     private static CommandManager instance;
     Stack<Command> cmds;
+    Stack<Command> redoCmds;
     RefreshableController controller;
 
     private CommandManager(RefreshableController controller) {
         this.controller = controller;
         cmds = new Stack<>();
+        redoCmds = new Stack<>();
     }
 
     public static CommandManager getInstance() {
@@ -29,13 +31,25 @@ public class CommandManager {
         command.apply();
         cmds.push(command);
         controller.refresh();
+        redoCmds.clear();
     }
 
     public void rollBack() {
         if (cmds.size() > 0) {
-            cmds.pop().rollBack();
+            Command undoCmd = cmds.pop();
+            undoCmd.rollBack();
+            redoCmds.push(undoCmd);
             controller.refresh();
-
         }
+    }
+
+    public void redoCommand() {
+        if (redoCmds.size() > 0) {
+            Command cmd = redoCmds.pop();
+            cmd.apply();
+            cmds.push(cmd);
+            controller.refresh();
+        }
+
     }
 }

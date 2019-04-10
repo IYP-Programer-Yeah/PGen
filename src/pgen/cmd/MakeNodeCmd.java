@@ -8,22 +8,20 @@ import pgen.model.NodeModel;
  */
 public class MakeNodeCmd implements Command {
     GraphModel graphModel;
-    double x;
-    double y;
+    NodeModel node;
 
     public MakeNodeCmd(GraphModel graphModel, double x, double y) {
         this.graphModel = graphModel;
-        this.x = x;
-        this.y = y;
+        node = new NodeModel(x, y, graphModel);
     }
 
     @Override
     public void apply() {
-        graphModel.getNodes().add(new NodeModel(x, y, graphModel));
+        graphModel.getNodes().add(node);
     }
 
     @Override
     public void rollBack() {
-
+        graphModel.getNodes().remove(node);
     }
 }
