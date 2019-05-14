@@ -1,5 +1,6 @@
 package pgen.service;
 
+import javafx.util.Pair;
 import pgen.model.EdgeModel;
 import pgen.model.GraphModel;
 import pgen.model.NodeModel;
@@ -46,7 +47,8 @@ public class LLParser {
         return messages;
     }
 
-    public LLCell[][] buildTable(List<GraphModel> graphs, Map<String, Integer> tokensInt) throws TableException {
+    public Pair<LLCell[][], Integer> buildTable(List<GraphModel> graphs, Map<String, Integer> tokensInt) throws TableException {
+        int startNode = 0;
         List<Message> msgs = check(graphs);
         if (msgs.size() > 0)
             throw new TableException(msgs);
@@ -104,6 +106,7 @@ public class LLParser {
         for (GraphModel graphModel : graphs) {
 
             if (graphModel.getName().equals("MAIN")) {
+                startNode = graphModel.getStart().getId();
                 graphModel.getNodes().stream().filter(NodeModel::getFinal).
                         forEach(nodeModel -> table[nodeModel.getId()][0] = new LLCell(LLCell.ACCEPT, -1, ""));
             } else {
@@ -169,17 +172,20 @@ public class LLParser {
         });
         if (msgs.size() != 0)
             throw new TableException(msgs);
-        return table;
+        return new Pair<>(table, startNode);
     }
 
     public List<Message> buildTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
         try {
-            LLCell[][] table = buildTable(graphs, tokensInt);
+            Pair<LLCell[][], Integer> tableInfo = buildTable(graphs, tokensInt);
+            int startNode = tableInfo.getValue();
+            LLCell[][] table = tableInfo.getKey();
             List<NodeModel> nodes = graphs.stream().
                     flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
             try (PrintWriter writer = new PrintWriter(file)) {
                 writer.printf("%d %d\n", nodes.size(), table[0].length);
+                writer.printf("%d\n", startNode);
                 List<String> list = tokensInt.keySet().stream().sorted((o1, o2) -> tokensInt.get(o1) - tokensInt.get(o2)).collect(Collectors.toList());
                 list.forEach(s -> writer.printf("%s ", s));
                 writer.println();
@@ -205,7 +211,8 @@ public class LLParser {
     public List<Message> buildPrettyTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
         try {
-            LLCell[][] table = buildTable(graphs, tokensInt);
+            Pair<LLCell[][], Integer> tableInfo = buildTable(graphs, tokensInt);
+            LLCell[][] table = tableInfo.getKey();;
             try (PrintWriter writer = new PrintWriter(file)) {
                 List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 List<String> headersList = new ArrayList<>(list);
@@ -266,7 +273,8 @@ public class LLParser {
     public List<Message> buildCSVTable(List<GraphModel> graphs, File file) {
         Map<String, Integer> tokensInt = new HashMap<>();
         try {
-            LLCell[][] table = buildTable(graphs, tokensInt);
+            Pair<LLCell[][], Integer> tableInfo = buildTable(graphs, tokensInt);
+            LLCell[][] table = tableInfo.getKey();
             try (PrintWriter writer = new PrintWriter(file)) {
                 StringBuffer blocksText = new StringBuffer();
                 List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
