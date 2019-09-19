@@ -298,6 +298,6 @@ public class MainController {
     }
 
     public void manualMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/HelpPage.fxml"), "Help");
+        showModal(ResourceUtility.getResource("fxml/Help.fxml"), "Help");
     }
 }
