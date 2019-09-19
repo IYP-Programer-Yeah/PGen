@@ -1,5 +1,6 @@
 package ir.ac.sbu.pgen.graphics;
 
+import ir.ac.sbu.utility.ResourceUtility;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -163,7 +164,7 @@ public class BoundLine extends CubicCurve {
 
     private void showPropertiesDialog() {
 
-        final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EdgePropertiesDialog.fxml"));
+        final FXMLLoader loader = new FXMLLoader(ResourceUtility.getResource("fxml/EdgePropertiesDialog.fxml"));
         EdgePropertiesController controller = new EdgePropertiesController();
         loader.setController(controller);
         Parent root = null;

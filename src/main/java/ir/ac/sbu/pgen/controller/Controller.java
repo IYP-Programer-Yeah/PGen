@@ -1,5 +1,6 @@
 package ir.ac.sbu.pgen.controller;
 
+import ir.ac.sbu.utility.ResourceUtility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -260,13 +261,13 @@ public class Controller {
     }
 
     public void aboutMenu(ActionEvent actionEvent) {
-        showModal(getClass().getResource("/fxml/AboutPage.fxml"), "About");
+        showModal(ResourceUtility.getResource("fxml/AboutPage.fxml"), "About");
 
 
     }
 
     public void licenseMenu(ActionEvent actionEvent) {
-        showModal(getClass().getResource("/fxml/LicensePage.fxml"), "License");
+        showModal(ResourceUtility.getResource("fxml/LicensePage.fxml"), "License");
 
     }
 
@@ -298,6 +299,6 @@ public class Controller {
     }
 
     public void manualMenu(ActionEvent actionEvent) {
-        showModal(getClass().getResource("/fxml/HelpPage.fxml"), "Help");
+        showModal(ResourceUtility.getResource("fxml/HelpPage.fxml"), "Help");
     }
 }

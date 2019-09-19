@@ -1,5 +1,6 @@
 package ir.ac.sbu.pgen;
 
+import ir.ac.sbu.utility.ResourceUtility;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,11 +16,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainWindow.fxml"));
+        Parent root = FXMLLoader.load(ResourceUtility.getResource("fxml/MainWindow.fxml"));
         primaryStage.setTitle("PGen");
-        primaryStage.getIcons().add(
-                new Image(
-                        getClass().getResourceAsStream("/fxml/Icon.png")));
+        primaryStage.getIcons().add(new Image(ResourceUtility.getResourceAsStream("assets/Icon.png")));
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
