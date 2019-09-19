@@ -13,4 +13,3 @@ public class AboutController {
         ((Stage) page.getScene().getWindow()).close();
     }
 }
-
