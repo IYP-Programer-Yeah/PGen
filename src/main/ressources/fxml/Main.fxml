@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="mainContainer" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ir.ac.sbu.controller.MainController">
+    <MenuBar>
+        <Menu mnemonicParsing="false" text="File">
+            <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save"/>
+            <MenuItem fx:id="loadMenuItem" mnemonicParsing="false" text="Load"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Parser">
+            <MenuItem mnemonicParsing="false" onAction="#renumber" text="Renumber"/>
+            <MenuItem fx:id="checkMenuItem" mnemonicParsing="false" text="Build Table"/>
+            <MenuItem fx:id="exportTableMenuItem" mnemonicParsing="false" text="Build Pretty Table"/>
+            <MenuItem fx:id="exportCSVTableMenuItem" mnemonicParsing="false" text="Build CSV Table"/>
+            <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export Functions"/>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+            <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#aboutMenu" text="About"/>
+            <MenuItem mnemonicParsing="false" onAction="#licenseMenu" text="License"/>
+            <MenuItem mnemonicParsing="false" onAction="#manualMenu" text="Manual"/>
+        </Menu>
+    </MenuBar>
+    <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <Button fx:id="addGraphBtn" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../assets/plusIcon.png"/>
+                </ImageView>
+            </graphic>
+            <tooltip>
+                <Tooltip text="Add new Graph"/>
+            </tooltip>
+        </Button>
+    </ToolBar>
+    <SplitPane dividerPositions="1.0" VBox.vgrow="ALWAYS">
+        <ListView fx:id="list" minWidth="100" maxWidth="200"/>
+        <ScrollPane fx:id="scrollpane">
+            <AnchorPane fx:id="pane" minHeight="0.0" minWidth="0.0" prefHeight="4000" prefWidth="4000"/>
+        </ScrollPane>
+    </SplitPane>
+</VBox>
