@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.controller;
+package ir.ac.sbu.controller;
 
 import ir.ac.sbu.utility.ResourceUtility;
 import javafx.collections.FXCollections;
@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Controller {
-
+public class MainController {
     @FXML
     public ListView<GraphModel> list;
     @FXML
