@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.controller;
+package ir.ac.sbu.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,9 +9,6 @@ import ir.ac.sbu.pgen.cmd.ChangeEdgeCmd;
 import ir.ac.sbu.pgen.cmd.CommandManager;
 import ir.ac.sbu.pgen.model.EdgeModel;
 
-/**
- * Created by Pouya Payandeh on 8/31/2016.
- */
 public class EdgePropertiesController {
     @FXML
     public Button okBtn;

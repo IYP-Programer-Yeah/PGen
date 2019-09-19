@@ -1,13 +1,10 @@
-package ir.ac.sbu.pgen.controller;
+package ir.ac.sbu.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-/**
- * Created by Pouya Payandeh on 10/14/2016.
- */
-public class helpController {
+public class LicenseController {
     public AnchorPane pane;
 
     public void close(ActionEvent actionEvent) {
