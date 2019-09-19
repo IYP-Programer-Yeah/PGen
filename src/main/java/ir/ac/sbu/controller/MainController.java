@@ -96,7 +96,7 @@ public class MainController {
             renameBtn.setOnAction(event ->
             {
                 TextInputDialog dialog = new TextInputDialog(cell.getItem().getName());
-                dialog.setTitle("Dialog");
+                dialog.setTitle("dialog");
                 dialog.setHeaderText("Enter a Name");
                 Optional<String> result = dialog.showAndWait();
                 result.ifPresent(s -> cell.getItem().setName(s));
@@ -107,7 +107,6 @@ public class MainController {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
                     if (cell.getItem() == null) {
-                        System.out.println(cell.getIndex());
                         cell.textProperty().unbind();
 //                        cell.setGraphic(null);
                         cell.setText("");
@@ -123,16 +122,7 @@ public class MainController {
             return cell;
 
         });
-//
-//        ContextMenu contextMenu = new ContextMenu();
-//        MenuItem deleteBtn = new MenuItem("Delete");
-//        CheckMenuItem finalBtn = new CheckMenuItem("Rename");
-//        node.finalProperty().bind(finalBtn.selectedProperty());
-//        CheckMenuItem startBtn = new CheckMenuItem("Start");
-//        contextMenu.getItems().addAll(deleteBtn, finalBtn, startBtn);
-//        contextMenu.show(this, event.getScreenX(), event.getScreenY());
-//
-//        list.setContextMenu();
+
         mainContainer.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
         mainContainer.addEventHandler(KeyEvent.KEY_RELEASED, event -> drawPaneController.firstNode = null);
         exportMenuItem.setOnAction(this::export);
@@ -261,13 +251,10 @@ public class MainController {
 
     public void aboutMenu(ActionEvent actionEvent) {
         showModal(ResourceUtility.getResource("fxml/About.fxml"), "About");
-
-
     }
 
     public void licenseMenu(ActionEvent actionEvent) {
         showModal(ResourceUtility.getResource("fxml/License.fxml"), "License");
-
     }
 
     private void showModal(URL resource, String title) {
