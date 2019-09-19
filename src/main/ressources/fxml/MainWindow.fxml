@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60"
-      fx:controller="pgen.controller.Controller">
+      fx:controller="ir.ac.sbu.pgen.controller.Controller">
     <children>
         <MenuBar>
             <menus>
@@ -42,7 +42,7 @@
                     <graphic>
                         <ImageView fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@plusIcon.png"/>
+                                <Image url="@../assets/plusIcon.png"/>
                             </image>
                         </ImageView>
                     </graphic>

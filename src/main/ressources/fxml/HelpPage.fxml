@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="422.0" prefWidth="419.0"
-            xmlns="http://javafx.com/javafx/8.0.60" fx:controller="pgen.controller.helpController">
+            xmlns="http://javafx.com/javafx/8.0.60" fx:controller="ir.ac.sbu.pgen.controller.helpController">
     <children>
         <TextArea layoutX="22.0" layoutY="20.0" prefHeight="353.0" prefWidth="375.0" editable="false"
                   text="Hold &lt;Shift&gt; to make connections between nodes&#10;&#10;Right Click on edge's name for deleting or changing parameteres&#10;"/>
