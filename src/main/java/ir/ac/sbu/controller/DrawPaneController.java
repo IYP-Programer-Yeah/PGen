@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.controller;
+package ir.ac.sbu.controller;
 
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -13,19 +13,14 @@ import ir.ac.sbu.pgen.model.EdgeModel;
 import ir.ac.sbu.pgen.model.GraphModel;
 import ir.ac.sbu.pgen.model.NodeModel;
 
-
-/**
- * Created by Pouya Payandeh on 7/23/2016.
- */
 public class DrawPaneController implements RefreshableController {
-    Pane pane;
-    GraphModel graph;
-    NodeModel firstNode = null;
+    private Pane pane;
+    private GraphModel graph;
+    private NodeModel firstNode = null;
 
     public DrawPaneController(Pane pane) {
         this.pane = pane;
         pane.setOnMouseReleased(this::mouseClickEvent);
-
     }
 
     public void refresh() {
@@ -34,13 +29,10 @@ public class DrawPaneController implements RefreshableController {
         for (NodeModel nodeModel : graph.getNodes()) {
             for (EdgeModel edge : nodeModel.getAdjacent()) {
                 BoundLine line = new BoundLine(edge);
-
-
                 pane.getChildren().addAll(line, line.getAnchor(), line.getText(), line.getArrowEnd());
                 line.toBack();
             }
         }
-
 
         for (NodeModel nodeModel : graph.getNodes()) {
             GraphNode graphNode = new GraphNode(nodeModel);
@@ -58,14 +50,36 @@ public class DrawPaneController implements RefreshableController {
         else {
             CommandManager.getInstance().applyCommand( new MakeEdgeCmd(firstNode, node));
             firstNode = node;
-            System.out.println("new Edge");
         }
-        System.out.println(node.getId());
     }
 
     private void mouseClickEvent(MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
             CommandManager.getInstance().applyCommand(new MakeNodeCmd(graph, mouseEvent.getX(), mouseEvent.getY()));
         }
+    }
+
+    public void setGraph(GraphModel graph) {
+        this.graph = graph;
+    }
+
+    public Pane getPane() {
+        return pane;
+    }
+
+    public void setPane(Pane pane) {
+        this.pane = pane;
+    }
+
+    public GraphModel getGraph() {
+        return graph;
+    }
+
+    public NodeModel getFirstNode() {
+        return firstNode;
+    }
+
+    public void setFirstNode(NodeModel firstNode) {
+        this.firstNode = firstNode;
     }
 }
