@@ -260,7 +260,7 @@ public class MainController {
     }
 
     public void aboutMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/AboutPage.fxml"), "About");
+        showModal(ResourceUtility.getResource("fxml/About.fxml"), "About");
 
 
     }
