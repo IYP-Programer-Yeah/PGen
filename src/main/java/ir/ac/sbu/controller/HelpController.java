@@ -1,13 +1,15 @@
 package ir.ac.sbu.controller;
 
 import javafx.event.ActionEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.fxml.FXML;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class HelpController {
-    public AnchorPane pane;
+    @FXML
+    private VBox page;
 
     public void close(ActionEvent actionEvent) {
-        ((Stage) pane.getScene().getWindow()).close();
+        ((Stage) page.getScene().getWindow()).close();
     }
 }
