@@ -63,12 +63,12 @@ public class MainController {
         drawPaneController = new DrawPaneController(pane);
         CommandManager.init(drawPaneController);
         GraphModel graph = new GraphModel("MAIN");
-        drawPaneController.graph = graph;
+        drawPaneController.setGraph(graph);
         list.setItems(graphs);
         graphs.addAll(graph);
         list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
-            drawPaneController.graph = newValue;
+            drawPaneController.setGraph(newValue);
             drawPaneController.refresh();
         });
         list.setCellFactory(param ->
@@ -134,7 +134,7 @@ public class MainController {
 //
 //        list.setContextMenu();
         mainContainer.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
-        mainContainer.addEventHandler(KeyEvent.KEY_RELEASED, event -> drawPaneController.firstNode = null);
+        mainContainer.addEventHandler(KeyEvent.KEY_RELEASED, event -> drawPaneController.setFirstNode(null));
         exportMenuItem.setOnAction(this::export);
         saveMenuItem.setOnAction(this::save);
         loadMenuItem.setOnAction(this::load);
@@ -211,7 +211,7 @@ public class MainController {
         if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
             exportService.load(list);
-            drawPaneController.graph = list.getItems().get(0);
+            drawPaneController.setGraph(list.getItems().get(0));
             drawPaneController.refresh();
         }
     }

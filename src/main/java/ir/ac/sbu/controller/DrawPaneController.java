@@ -3,7 +3,6 @@ package ir.ac.sbu.controller;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import ir.ac.sbu.pgen.cmd.Command;
 import ir.ac.sbu.pgen.cmd.CommandManager;
 import ir.ac.sbu.pgen.cmd.MakeEdgeCmd;
 import ir.ac.sbu.pgen.cmd.MakeNodeCmd;
