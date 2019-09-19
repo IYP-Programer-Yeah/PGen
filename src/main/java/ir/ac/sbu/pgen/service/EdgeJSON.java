@@ -1,6 +1,6 @@
-package pgen.service;
+package ir.ac.sbu.pgen.service;
 
-import pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.model.EdgeModel;
 
 /**
  * Created by Pouya Payandeh on 9/6/2016.

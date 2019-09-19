@@ -1,4 +1,4 @@
-package pgen.controller;
+package ir.ac.sbu.pgen.controller;
 
 /**
  * Created by Pouya Payandeh on 9/3/2016.

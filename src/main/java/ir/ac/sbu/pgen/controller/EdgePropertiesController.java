@@ -1,13 +1,13 @@
-package pgen.controller;
+package ir.ac.sbu.pgen.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import pgen.cmd.ChangeEdgeCmd;
-import pgen.cmd.CommandManager;
-import pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.cmd.ChangeEdgeCmd;
+import ir.ac.sbu.pgen.cmd.CommandManager;
+import ir.ac.sbu.pgen.model.EdgeModel;
 
 /**
  * Created by Pouya Payandeh on 8/31/2016.

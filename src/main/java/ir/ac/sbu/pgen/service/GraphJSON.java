@@ -1,6 +1,6 @@
-package pgen.service;
+package ir.ac.sbu.pgen.service;
 
-import pgen.model.GraphModel;
+import ir.ac.sbu.pgen.model.GraphModel;
 
 import java.util.List;
 import java.util.stream.Collectors;

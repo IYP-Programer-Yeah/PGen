@@ -1,4 +1,4 @@
-package pgen.graphics;
+package ir.ac.sbu.pgen.graphics;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -14,10 +14,10 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import pgen.cmd.CommandManager;
-import pgen.cmd.DeleteEdgeCmd;
-import pgen.controller.EdgePropertiesController;
-import pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.cmd.CommandManager;
+import ir.ac.sbu.pgen.cmd.DeleteEdgeCmd;
+import ir.ac.sbu.pgen.controller.EdgePropertiesController;
+import ir.ac.sbu.pgen.model.EdgeModel;
 
 import java.io.IOException;
 

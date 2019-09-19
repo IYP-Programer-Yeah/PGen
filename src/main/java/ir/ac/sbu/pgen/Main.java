@@ -1,4 +1,4 @@
-package pgen;
+package ir.ac.sbu.pgen;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

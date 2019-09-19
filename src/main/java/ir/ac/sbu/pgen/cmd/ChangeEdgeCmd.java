@@ -1,6 +1,6 @@
-package pgen.cmd;
+package ir.ac.sbu.pgen.cmd;
 
-import pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.model.EdgeModel;
 
 /**
  * Created by Pouya Payandeh on 9/3/2016.

@@ -1,8 +1,8 @@
-package pgen.cmd;
+package ir.ac.sbu.pgen.cmd;
 
-import pgen.model.EdgeModel;
-import pgen.model.GraphModel;
-import pgen.model.NodeModel;
+import ir.ac.sbu.pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.model.GraphModel;
+import ir.ac.sbu.pgen.model.NodeModel;
 
 import java.util.List;
 import java.util.stream.Collectors;

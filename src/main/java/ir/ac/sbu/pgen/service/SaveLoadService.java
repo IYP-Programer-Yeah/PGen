@@ -1,11 +1,11 @@
-package pgen.service;
+package ir.ac.sbu.pgen.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.scene.control.ListView;
-import pgen.model.EdgeModel;
-import pgen.model.GraphModel;
-import pgen.model.NodeModel;
+import ir.ac.sbu.pgen.model.EdgeModel;
+import ir.ac.sbu.pgen.model.GraphModel;
+import ir.ac.sbu.pgen.model.NodeModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;

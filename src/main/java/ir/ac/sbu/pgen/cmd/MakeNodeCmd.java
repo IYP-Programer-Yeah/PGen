@@ -1,7 +1,7 @@
-package pgen.cmd;
+package ir.ac.sbu.pgen.cmd;
 
-import pgen.model.GraphModel;
-import pgen.model.NodeModel;
+import ir.ac.sbu.pgen.model.GraphModel;
+import ir.ac.sbu.pgen.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 7/23/2016.

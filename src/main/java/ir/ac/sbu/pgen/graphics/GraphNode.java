@@ -1,4 +1,4 @@
-package pgen.graphics;
+package ir.ac.sbu.pgen.graphics;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,9 +16,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
-import pgen.cmd.CommandManager;
-import pgen.cmd.DeleteNodeCmd;
-import pgen.model.NodeModel;
+import ir.ac.sbu.pgen.cmd.CommandManager;
+import ir.ac.sbu.pgen.cmd.DeleteNodeCmd;
+import ir.ac.sbu.pgen.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 8/20/2016.

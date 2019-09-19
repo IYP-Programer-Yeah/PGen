@@ -1,4 +1,4 @@
-package pgen.controller;
+package ir.ac.sbu.pgen.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;

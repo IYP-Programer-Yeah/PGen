@@ -1,4 +1,4 @@
-package pgen.service;
+package ir.ac.sbu.pgen.service;
 
 import java.util.List;
 
