@@ -1,5 +1,6 @@
 package ir.ac.sbu.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -11,16 +12,17 @@ import ir.ac.sbu.pgen.model.EdgeModel;
 
 public class EdgePropertiesController {
     @FXML
-    public Button okBtn;
+    private Button applyBtn;
     @FXML
-    public TextField tokenText;
+    private TextField tokenText;
     @FXML
-    public TextField funcText;
+    private TextField funcText;
     @FXML
-    public CheckBox graphChk;
+    private CheckBox graphChk;
     @FXML
-    public CheckBox globalChk;
-    EdgeModel edge;
+    private CheckBox globalChk;
+
+    private EdgeModel edge;
 
     public void init(EdgeModel edge) {
         this.edge = edge;
@@ -28,13 +30,11 @@ public class EdgePropertiesController {
         funcText.setText(edge.getFunc());
         globalChk.setSelected(edge.getGlobal());
         graphChk.setSelected(edge.getGraph());
-        okBtn.setOnMouseClicked(event ->
-                {
-                    Stage stage = (Stage) okBtn.getScene().getWindow();
-                    CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge, tokenText.getText(), funcText.getText(), graphChk.isSelected(), globalChk.isSelected()));
-                    stage.close();
-                }
-        );
     }
 
+    public void apply(ActionEvent actionEvent) {
+        Stage stage = (Stage) applyBtn.getScene().getWindow();
+        CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge, tokenText.getText(), funcText.getText(), graphChk.isSelected(), globalChk.isSelected()));
+        stage.close();
+    }
 }
