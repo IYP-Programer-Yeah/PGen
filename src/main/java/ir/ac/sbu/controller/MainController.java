@@ -266,7 +266,7 @@ public class MainController {
     }
 
     public void licenseMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/LicensePage.fxml"), "License");
+        showModal(ResourceUtility.getResource("fxml/License.fxml"), "License");
 
     }
 
