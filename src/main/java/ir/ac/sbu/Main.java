@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen;
+package ir.ac.sbu;
 
 import ir.ac.sbu.utility.ResourceUtility;
 import javafx.application.Application;
