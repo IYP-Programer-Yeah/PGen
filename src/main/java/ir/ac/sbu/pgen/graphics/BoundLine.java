@@ -17,7 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ir.ac.sbu.pgen.cmd.CommandManager;
 import ir.ac.sbu.pgen.cmd.DeleteEdgeCmd;
-import ir.ac.sbu.pgen.controller.EdgePropertiesController;
+import ir.ac.sbu.controller.EdgePropertiesController;
 import ir.ac.sbu.pgen.model.EdgeModel;
 
 import java.io.IOException;
@@ -163,23 +163,20 @@ public class BoundLine extends CubicCurve {
     }
 
     private void showPropertiesDialog() {
-
-        final FXMLLoader loader = new FXMLLoader(ResourceUtility.getResource("fxml/EdgePropertiesDialog.fxml"));
-        EdgePropertiesController controller = new EdgePropertiesController();
-        loader.setController(controller);
-        Parent root = null;
         try {
-            root = loader.load();
+            FXMLLoader edgePropertiesDialog = new FXMLLoader(ResourceUtility.getResource("fxml/EdgePropertiesDialog.fxml"));
+            Scene scene = new Scene(edgePropertiesDialog.load());
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+
+            EdgePropertiesController edgePropertiesController = edgePropertiesDialog.getController();
+            edgePropertiesController.init(edge);
+
+            stage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Unable to open properties dialog: " + e.getMessage());
         }
-        controller.init(edge);
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
-        System.out.println("Finisheed");
     }
 
     public Anchor getAnchor() {
