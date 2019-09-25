@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.graphics;
+package ir.ac.sbu.graphics;
 
 import javafx.beans.NamedArg;
 import javafx.scene.control.Alert;

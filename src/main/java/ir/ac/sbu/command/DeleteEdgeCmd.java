@@ -1,7 +1,7 @@
 package ir.ac.sbu.command;
 
-import ir.ac.sbu.pgen.model.EdgeModel;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.EdgeModel;
+import ir.ac.sbu.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 10/14/2016.

@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.graphics;
+package ir.ac.sbu.graphics;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Cursor;

@@ -1,6 +1,6 @@
-package ir.ac.sbu.pgen.service;
+package ir.ac.sbu.service;
 
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 9/6/2016.

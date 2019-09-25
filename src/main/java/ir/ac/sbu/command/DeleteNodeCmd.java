@@ -1,8 +1,8 @@
 package ir.ac.sbu.command;
 
-import ir.ac.sbu.pgen.model.EdgeModel;
-import ir.ac.sbu.pgen.model.GraphModel;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.EdgeModel;
+import ir.ac.sbu.model.GraphModel;
+import ir.ac.sbu.model.NodeModel;
 
 import java.util.List;
 import java.util.stream.Collectors;

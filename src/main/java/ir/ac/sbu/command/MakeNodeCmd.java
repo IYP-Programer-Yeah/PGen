@@ -1,7 +1,7 @@
 package ir.ac.sbu.command;
 
-import ir.ac.sbu.pgen.model.GraphModel;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.GraphModel;
+import ir.ac.sbu.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 7/23/2016.

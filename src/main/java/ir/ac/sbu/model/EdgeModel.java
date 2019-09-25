@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.model;
+package ir.ac.sbu.model;
 
 import javafx.beans.property.*;
 
@@ -12,7 +12,7 @@ public class EdgeModel {
     DoubleProperty anchorX;
     DoubleProperty anchorY;
 
-    public EdgeModel(NodeModel start, NodeModel end) {
+    public EdgeModel(ir.ac.sbu.model.NodeModel start, ir.ac.sbu.model.NodeModel end) {
         this.start = start;
         this.end = end;
         anchorX = new SimpleDoubleProperty((start.x.get() + end.x.get()) / 2);
@@ -32,19 +32,19 @@ public class EdgeModel {
         global = new SimpleBooleanProperty(false);
     }
 
-    public NodeModel getEnd() {
+    public ir.ac.sbu.model.NodeModel getEnd() {
         return end;
     }
 
-    public void setEnd(NodeModel end) {
+    public void setEnd(ir.ac.sbu.model.NodeModel end) {
         this.end = end;
     }
 
-    public NodeModel getStart() {
+    public ir.ac.sbu.model.NodeModel getStart() {
         return start;
     }
 
-    public void setStart(NodeModel start) {
+    public void setStart(ir.ac.sbu.model.NodeModel start) {
         this.start = start;
     }
 
