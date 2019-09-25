@@ -22,9 +22,6 @@ import ir.ac.sbu.model.EdgeModel;
 
 import java.io.IOException;
 
-/**
- * Created by Pouya Payandeh on 7/10/2016.
- */
 public class BoundLine extends CubicCurve {
     Anchor anchor;
     Text text;

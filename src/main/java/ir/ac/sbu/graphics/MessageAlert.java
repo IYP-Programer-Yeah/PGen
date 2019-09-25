@@ -7,9 +7,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-/**
- * Created by Pouya Payandeh on 9/18/2016.
- */
 public class MessageAlert extends Alert {
     public MessageAlert(@NamedArg("alertType") AlertType alertType) {
         super(alertType);

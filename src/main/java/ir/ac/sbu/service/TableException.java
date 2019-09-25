@@ -2,9 +2,6 @@ package ir.ac.sbu.service;
 
 import java.util.List;
 
-/**
- * Created by Pouya Payandeh on 1/24/2017.
- */
 public class TableException extends Exception {
     private final List<Message> msg;
 

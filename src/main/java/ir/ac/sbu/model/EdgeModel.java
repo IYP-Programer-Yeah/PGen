@@ -2,9 +2,6 @@ package ir.ac.sbu.model;
 
 import javafx.beans.property.*;
 
-/**
- * Created by Pouya Payandeh on 7/23/2016.
- */
 public class EdgeModel {
     NodeModel start, end;
     StringProperty token, func;
@@ -12,7 +9,7 @@ public class EdgeModel {
     DoubleProperty anchorX;
     DoubleProperty anchorY;
 
-    public EdgeModel(ir.ac.sbu.model.NodeModel start, ir.ac.sbu.model.NodeModel end) {
+    public EdgeModel(NodeModel start, NodeModel end) {
         this.start = start;
         this.end = end;
         anchorX = new SimpleDoubleProperty((start.x.get() + end.x.get()) / 2);
@@ -32,19 +29,19 @@ public class EdgeModel {
         global = new SimpleBooleanProperty(false);
     }
 
-    public ir.ac.sbu.model.NodeModel getEnd() {
+    public NodeModel getEnd() {
         return end;
     }
 
-    public void setEnd(ir.ac.sbu.model.NodeModel end) {
+    public void setEnd(NodeModel end) {
         this.end = end;
     }
 
-    public ir.ac.sbu.model.NodeModel getStart() {
+    public NodeModel getStart() {
         return start;
     }
 
-    public void setStart(ir.ac.sbu.model.NodeModel start) {
+    public void setStart(NodeModel start) {
         this.start = start;
     }
 

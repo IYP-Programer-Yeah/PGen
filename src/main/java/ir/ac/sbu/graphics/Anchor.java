@@ -1,16 +1,14 @@
 package ir.ac.sbu.graphics;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.event.Event;
 import javafx.scene.Cursor;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
 
-/**
- * Created by Pouya Payandeh on 7/10/2016.
- */
 public class Anchor extends Circle {
-    Runnable externalMouse = () -> {
+    private Runnable externalMouse = () -> {
     };
 
     Anchor(Color color, DoubleProperty x, DoubleProperty y, double r) {
@@ -34,9 +32,7 @@ public class Anchor extends Circle {
     // make a node movable by dragging it around with the mouse.
     private void enableDrag() {
         final Delta dragDelta = new Delta();
-        setOnMouseClicked(event -> {
-            event.consume();
-        });
+        setOnMouseClicked(Event::consume);
         setOnMousePressed(mouseEvent -> {
             // record a delta distance for the drag and drop operation.
             mouseEvent.consume();

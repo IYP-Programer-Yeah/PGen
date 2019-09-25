@@ -8,9 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Pouya Payandeh on 7/23/2016.
- */
 public class GraphModel {
     StringProperty name;
     List<NodeModel> nodes = new ArrayList<NodeModel>();

@@ -2,9 +2,6 @@ package ir.ac.sbu.service;
 
 import ir.ac.sbu.model.EdgeModel;
 
-/**
- * Created by Pouya Payandeh on 9/6/2016.
- */
 public class EdgeJSON {
     int start, end;
     String token, func;

@@ -9,9 +9,6 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Pouya Payandeh on 9/5/2016.
- */
 public class ExportService {
     File dir;
     String FUNCTION_TEMPLATE = "public static void %s()\n{\n}";

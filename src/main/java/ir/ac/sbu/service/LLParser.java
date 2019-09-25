@@ -15,9 +15,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Created by Pouya Payandeh on 9/18/2016.
- */
 public class LLParser {
     final String EPSILON = "$epsilon";
     final String EOF = "$";

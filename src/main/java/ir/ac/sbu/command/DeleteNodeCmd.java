@@ -7,9 +7,6 @@ import ir.ac.sbu.model.NodeModel;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Pouya Payandeh on 9/17/2016.
- */
 public class DeleteNodeCmd implements Command {
     GraphModel graphModel;
     NodeModel nodeModel;
