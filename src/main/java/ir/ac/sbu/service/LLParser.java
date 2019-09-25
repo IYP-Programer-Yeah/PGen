@@ -1,12 +1,12 @@
 package ir.ac.sbu.service;
 
+import ir.ac.sbu.wagu.Block;
+import ir.ac.sbu.wagu.Board;
+import ir.ac.sbu.wagu.Table;
 import javafx.util.Pair;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
-import wagu.Block;
-import wagu.Board;
-import wagu.Table;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -448,7 +448,7 @@ public class LLParser {
                 nameNode.put(entry.getKey(), entry.getValue().getStart());
                 follows.put(entry.getKey(), new HashSet<>());
             } catch (Exception e) {
-                System.out.println("");
+                throw new RuntimeException(e);
             }
 
         }
@@ -464,7 +464,6 @@ public class LLParser {
                     follow.addAll(follows.get("$" + edge.getStart().getId()));
                     follows.get("$" + edge.getStart().getId()).addAll(follow);
                     if (edge.getGraph()) {
-//                        Set<String> follow = follows.get(entry.getKey());
                         Set<String> follow2 = follows.get(edge.getToken());
 
 //                        follow.addAll(follows.get("$"+edge.getStart().getId()));

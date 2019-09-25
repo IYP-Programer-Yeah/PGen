@@ -1,16 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package wagu;
+package ir.ac.sbu.wagu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Thedath Oudarya
- */
 public final class Table {
 
     public final static int GRID_NON = 13;

@@ -21,6 +21,7 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image(ResourceUtility.getResourceAsStream("assets/Icon.png")));
 
         primaryStage.setScene(new Scene(root));
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }
