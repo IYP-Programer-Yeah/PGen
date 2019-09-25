@@ -5,9 +5,6 @@ import ir.ac.sbu.model.GraphModel;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Pouya Payandeh on 9/6/2016.
- */
 public class GraphJSON {
     String name;
     List<NodeJSON> nodes;

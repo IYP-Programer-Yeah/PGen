@@ -3,9 +3,6 @@ package ir.ac.sbu.command;
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
 
-/**
- * Created by Pouya Payandeh on 7/23/2016.
- */
 public class MakeNodeCmd implements Command {
     GraphModel graphModel;
     NodeModel node;

@@ -3,9 +3,6 @@ package ir.ac.sbu.command;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.NodeModel;
 
-/**
- * Created by Pouya Payandeh on 7/23/2016.
- */
 public class MakeEdgeCmd implements Command {
     NodeModel start, end;
     EdgeModel edge;

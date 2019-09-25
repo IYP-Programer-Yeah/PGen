@@ -20,9 +20,6 @@ import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.command.DeleteNodeCmd;
 import ir.ac.sbu.model.NodeModel;
 
-/**
- * Created by Pouya Payandeh on 8/20/2016.
- */
 public class GraphNode extends StackPane {
     private final double radius = 10;
     Circle circle;

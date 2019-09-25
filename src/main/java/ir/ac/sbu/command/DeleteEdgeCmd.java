@@ -3,9 +3,6 @@ package ir.ac.sbu.command;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.NodeModel;
 
-/**
- * Created by Pouya Payandeh on 10/14/2016.
- */
 public class DeleteEdgeCmd implements Command {
 
     EdgeModel edge;

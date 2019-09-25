@@ -2,9 +2,6 @@ package ir.ac.sbu.command;
 
 import ir.ac.sbu.model.EdgeModel;
 
-/**
- * Created by Pouya Payandeh on 9/3/2016.
- */
 public class ChangeEdgeCmd implements ir.ac.sbu.command.Command {
     EdgeModel edgeModel;
     String token;

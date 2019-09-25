@@ -1,8 +1,5 @@
 package ir.ac.sbu.service;
 
-/**
- * Created by Pouya Payandeh on 10/13/2016.
- */
 public class LLCell {
     public final static int ERROR = 0;
     public final static int SHIFT = 1;

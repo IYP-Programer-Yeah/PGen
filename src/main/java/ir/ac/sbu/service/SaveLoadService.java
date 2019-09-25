@@ -18,9 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-/**
- * Created by Pouya Payandeh on 9/6/2016.
- */
 public class SaveLoadService {
     File file;
 

@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Thedath Oudarya
- */
 public final class Block {
 
     public static final int BLOCK_LEFT = 1;
@@ -28,7 +25,7 @@ public final class Block {
     public static final int DATA_BOTTOM_RIGHT = 12;
     protected static int nextIndex = 0;
     private final int index;
-    private Board board;
+    private wagu.Board board;
     private int width;
     private int height;
     private boolean allowGrid;
@@ -43,11 +40,11 @@ public final class Block {
 
     private Block belowBlock;
 
-    private List<Charr> charrsList;
+    private List<wagu.Charr> charrsList;
 
     private String preview;
 
-    public Block(Board board, int width, int height) {
+    public Block(wagu.Board board, int width, int height) {
         this.board = board;
         if (width <= board.boardWidth) {
             this.width = width;
@@ -69,12 +66,12 @@ public final class Block {
         Block.nextIndex++;
     }
 
-    public Block(Board board, int width, int height, String data) {
+    public Block(wagu.Board board, int width, int height, String data) {
         this(board, width, height);
         this.data = data;
     }
 
-    public Block(Board board, int width, int height, String data, Block rightBlock, Block belowBlock) {
+    public Block(wagu.Board board, int width, int height, String data, Block rightBlock, Block belowBlock) {
         this(board, width, height, data);
         if (rightBlock != null) {
             rightBlock.setX(getX() + getWidth() + (isGridAllowed() ? 1 : 0));
@@ -256,7 +253,7 @@ public final class Block {
                     if (i + 1 != dataInLines.size()) {
                         String prifix = dataLine.substring(getWidth(), dataLine.length());
                         String suffix = dataInLines.get(i + 1);
-                        String combinedValue = prifix.concat((suffix.length() > 0 ? String.valueOf(Charr.S) : "")).concat(suffix);
+                        String combinedValue = prifix.concat((suffix.length() > 0 ? String.valueOf(wagu.Charr.S) : "")).concat(suffix);
                         dataInLines.set(i + 1, combinedValue);
                     }
                 }
@@ -290,15 +287,15 @@ public final class Block {
                     if (isGridAllowed()) {
                         if ((iy == startingIY) || (iy == extendedIY - 1)) {
                             if ((ix == startingIX) || (ix == extendedIX - 1)) {
-                                charrsList.add(new Charr(ix, iy, Charr.P));
+                                charrsList.add(new wagu.Charr(ix, iy, wagu.Charr.P));
                                 writeData = false;
                             } else {
-                                charrsList.add(new Charr(ix, iy, Charr.D));
+                                charrsList.add(new wagu.Charr(ix, iy, wagu.Charr.D));
                                 writeData = false;
                             }
                         } else {
                             if ((ix == startingIX) || (ix == extendedIX - 1)) {
-                                charrsList.add(new Charr(ix, iy, Charr.VL));
+                                charrsList.add(new wagu.Charr(ix, iy, wagu.Charr.VL));
                                 writeData = false;
                             } else {
                                 writeData = true;
@@ -323,7 +320,7 @@ public final class Block {
                             int dataEndingIndex = (startingIX + dataLeftSideSpaces + lineData.length() - (isGridAllowed() ? 0 : 1));
                             if (ix >= dataStartingIndex && ix <= dataEndingIndex) {
                                 char charData = lineData.charAt(ix - dataStartingIndex);
-                                charrsList.add(new Charr(ix, iy, charData));
+                                charrsList.add(new wagu.Charr(ix, iy, charData));
                             }
                         }
                     }
@@ -334,7 +331,7 @@ public final class Block {
         return this;
     }
 
-    protected List<Charr> getChars() {
+    protected List<wagu.Charr> getChars() {
         return this.charrsList;
     }
 
@@ -343,7 +340,7 @@ public final class Block {
         if (preview.isEmpty()) {
             int maxY = -1;
             int maxX = -1;
-            for (Charr charr : charrsList) {
+            for (wagu.Charr charr : charrsList) {
                 int testY = charr.getY();
                 int testX = charr.getX();
                 if (maxY < testY) {
@@ -354,18 +351,18 @@ public final class Block {
                 }
             }
             String[][] dataPoints = new String[maxY + 1][board.boardWidth];
-            for (Charr charr : charrsList) {
+            for (wagu.Charr charr : charrsList) {
                 dataPoints[charr.getY()][charr.getX()] = String.valueOf(charr.getC());
             }
 
             for (String[] dataPoint : dataPoints) {
                 for (String point : dataPoint) {
                     if (point == null) {
-                        point = String.valueOf(Charr.S);
+                        point = String.valueOf(wagu.Charr.S);
                     }
                     preview = preview.concat(point);
                 }
-                preview = preview.concat(String.valueOf(Charr.NL));
+                preview = preview.concat(String.valueOf(wagu.Charr.NL));
             }
         }
         return preview;

@@ -5,9 +5,6 @@ import javafx.beans.property.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Pouya Payandeh on 7/22/2016.
- */
 public class NodeModel {
 
     static int _id = 0;

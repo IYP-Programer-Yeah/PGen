@@ -4,9 +4,6 @@ import ir.ac.sbu.controller.RefreshableController;
 
 import java.util.Stack;
 
-/**
- * Created by Pouya Payandeh on 9/3/2016.
- */
 public class CommandManager {
     private static CommandManager instance;
     Stack<Command> cmds;
