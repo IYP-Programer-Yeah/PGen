@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.graphics;
+package ir.ac.sbu.graphics;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.command.DeleteNodeCmd;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.NodeModel;
 
 /**
  * Created by Pouya Payandeh on 8/20/2016.

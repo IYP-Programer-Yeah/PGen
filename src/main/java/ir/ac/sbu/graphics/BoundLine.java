@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.graphics;
+package ir.ac.sbu.graphics;
 
 import ir.ac.sbu.utility.ResourceUtility;
 import javafx.beans.property.DoubleProperty;
@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.command.DeleteEdgeCmd;
 import ir.ac.sbu.controller.EdgePropertiesController;
-import ir.ac.sbu.pgen.model.EdgeModel;
+import ir.ac.sbu.model.EdgeModel;
 
 import java.io.IOException;
 

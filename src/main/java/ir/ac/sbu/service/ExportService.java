@@ -1,7 +1,7 @@
-package ir.ac.sbu.pgen.service;
+package ir.ac.sbu.service;
 
-import ir.ac.sbu.pgen.model.EdgeModel;
-import ir.ac.sbu.pgen.model.GraphModel;
+import ir.ac.sbu.model.EdgeModel;
+import ir.ac.sbu.model.GraphModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;

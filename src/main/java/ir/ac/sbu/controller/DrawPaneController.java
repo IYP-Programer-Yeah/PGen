@@ -7,11 +7,11 @@ import ir.ac.sbu.command.Command;
 import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.command.MakeEdgeCmd;
 import ir.ac.sbu.command.MakeNodeCmd;
-import ir.ac.sbu.pgen.graphics.BoundLine;
-import ir.ac.sbu.pgen.graphics.GraphNode;
-import ir.ac.sbu.pgen.model.EdgeModel;
-import ir.ac.sbu.pgen.model.GraphModel;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.graphics.BoundLine;
+import ir.ac.sbu.graphics.GraphNode;
+import ir.ac.sbu.model.EdgeModel;
+import ir.ac.sbu.model.GraphModel;
+import ir.ac.sbu.model.NodeModel;
 
 public class DrawPaneController implements RefreshableController {
     private Pane pane;

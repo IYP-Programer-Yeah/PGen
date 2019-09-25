@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.service;
+package ir.ac.sbu.service;
 
 /**
  * Created by Pouya Payandeh on 10/13/2016.

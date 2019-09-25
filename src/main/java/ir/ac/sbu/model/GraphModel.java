@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.model;
+package ir.ac.sbu.model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

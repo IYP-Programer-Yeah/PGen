@@ -1,9 +1,9 @@
-package ir.ac.sbu.pgen.service;
+package ir.ac.sbu.service;
 
 import javafx.util.Pair;
-import ir.ac.sbu.pgen.model.EdgeModel;
-import ir.ac.sbu.pgen.model.GraphModel;
-import ir.ac.sbu.pgen.model.NodeModel;
+import ir.ac.sbu.model.EdgeModel;
+import ir.ac.sbu.model.GraphModel;
+import ir.ac.sbu.model.NodeModel;
 import wagu.Block;
 import wagu.Board;
 import wagu.Table;
