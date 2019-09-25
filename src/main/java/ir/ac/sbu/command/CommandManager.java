@@ -1,6 +1,6 @@
-package ir.ac.sbu.pgen.cmd;
+package ir.ac.sbu.command;
 
-import ir.ac.sbu.pgen.controller.RefreshableController;
+import ir.ac.sbu.controller.RefreshableController;
 
 import java.util.Stack;
 

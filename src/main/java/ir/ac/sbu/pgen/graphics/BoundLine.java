@@ -15,8 +15,8 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import ir.ac.sbu.pgen.cmd.CommandManager;
-import ir.ac.sbu.pgen.cmd.DeleteEdgeCmd;
+import ir.ac.sbu.command.CommandManager;
+import ir.ac.sbu.command.DeleteEdgeCmd;
 import ir.ac.sbu.controller.EdgePropertiesController;
 import ir.ac.sbu.pgen.model.EdgeModel;
 

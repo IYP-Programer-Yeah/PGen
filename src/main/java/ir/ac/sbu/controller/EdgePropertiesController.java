@@ -6,8 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import ir.ac.sbu.pgen.cmd.ChangeEdgeCmd;
-import ir.ac.sbu.pgen.cmd.CommandManager;
+import ir.ac.sbu.command.ChangeEdgeCmd;
+import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.pgen.model.EdgeModel;
 
 public class EdgePropertiesController {

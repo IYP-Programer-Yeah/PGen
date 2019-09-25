@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.cmd;
+package ir.ac.sbu.command;
 
 /**
  * Created by Pouya Payandeh on 7/23/2016.

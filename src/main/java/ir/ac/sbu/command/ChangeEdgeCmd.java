@@ -1,11 +1,11 @@
-package ir.ac.sbu.pgen.cmd;
+package ir.ac.sbu.command;
 
 import ir.ac.sbu.pgen.model.EdgeModel;
 
 /**
  * Created by Pouya Payandeh on 9/3/2016.
  */
-public class ChangeEdgeCmd implements Command {
+public class ChangeEdgeCmd implements ir.ac.sbu.command.Command {
     EdgeModel edgeModel;
     String token;
     String func;
