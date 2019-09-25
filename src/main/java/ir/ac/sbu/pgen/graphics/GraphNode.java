@@ -16,8 +16,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
-import ir.ac.sbu.pgen.cmd.CommandManager;
-import ir.ac.sbu.pgen.cmd.DeleteNodeCmd;
+import ir.ac.sbu.command.CommandManager;
+import ir.ac.sbu.command.DeleteNodeCmd;
 import ir.ac.sbu.pgen.model.NodeModel;
 
 /**

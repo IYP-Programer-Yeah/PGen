@@ -1,4 +1,4 @@
-package ir.ac.sbu.pgen.cmd;
+package ir.ac.sbu.command;
 
 import ir.ac.sbu.pgen.model.GraphModel;
 import ir.ac.sbu.pgen.model.NodeModel;
