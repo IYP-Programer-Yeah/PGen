@@ -111,7 +111,6 @@ public class GraphNode extends StackPane {
             if (!event.isShiftDown()) {
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
-                System.out.println(mouseY);
             }
             event.consume();
         });

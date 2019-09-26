@@ -184,7 +184,7 @@ public class MainController {
     private void export(ActionEvent actionEvent) {
         File selectedDirectory = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
         if (selectedDirectory != null) {
-            ExportService exportService = new ExportService(selectedDirectory);
+            ExportService exportService = new ExportService(selectedDirectory.toPath());
             exportService.exportGraphs(graphs);
             DialogUtility.showSuccessDialog("Exported successfully");
         }
