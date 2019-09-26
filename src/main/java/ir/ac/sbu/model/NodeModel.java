@@ -6,60 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodeModel {
-    DoubleProperty x = new SimpleDoubleProperty();
+    private int id;
+    private DoubleProperty x;
+    private DoubleProperty y;
+    private GraphModel graph;
 
-    List<EdgeModel> adjacent = new ArrayList<>();
-    DoubleProperty y = new SimpleDoubleProperty();
-    BooleanProperty final_ = new SimpleBooleanProperty(false);
-    BooleanProperty start = new SimpleBooleanProperty(false);
-    GraphModel graph;
-    int id;
+    private BooleanProperty finalNode;
+    private BooleanProperty startNode;
+    private List<EdgeModel> adjacent;
 
     public NodeModel(double x, double y, GraphModel graph, int id) {
-        this.x.setValue(x);
-        this.y.setValue(y);
+        this.x = new SimpleDoubleProperty(x);
+        this.y = new SimpleDoubleProperty(y);
         this.graph = graph;
         this.id = id;
-    }
 
-    public boolean isStart() {
-        return start.get();
-    }
-
-    public void setStart(boolean start) {
-        this.start.set(start);
-    }
-
-    public BooleanProperty startProperty() {
-        return start;
-    }
-
-    public double getX() {
-        return x.get();
-    }
-
-    public DoubleProperty xProperty() {
-        return x;
-    }
-
-    public double getY() {
-        return y.get();
-    }
-
-    public DoubleProperty yProperty() {
-        return y;
-    }
-
-    public boolean getFinal() {
-        return final_.get();
-    }
-
-    public void setFinal(boolean final_) {
-        this.final_.set(final_);
-    }
-
-    public BooleanProperty finalProperty() {
-        return final_;
+        adjacent = new ArrayList<>();
+        finalNode = new SimpleBooleanProperty(false);
+        startNode = new SimpleBooleanProperty(false);
     }
 
     public int getId() {
@@ -70,8 +34,28 @@ public class NodeModel {
         this.id = id;
     }
 
-    public List<EdgeModel> getAdjacent() {
-        return adjacent;
+    public double getX() {
+        return x.get();
+    }
+
+    public DoubleProperty xProperty() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x.set(x);
+    }
+
+    public double getY() {
+        return y.get();
+    }
+
+    public DoubleProperty yProperty() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y.set(y);
     }
 
     public GraphModel getGraph() {
@@ -80,5 +64,37 @@ public class NodeModel {
 
     public void setGraph(GraphModel graph) {
         this.graph = graph;
+    }
+
+    public List<EdgeModel> getAdjacent() {
+        return adjacent;
+    }
+
+    public void setAdjacent(List<EdgeModel> adjacent) {
+        this.adjacent = adjacent;
+    }
+
+    public boolean isFinalNode() {
+        return finalNode.get();
+    }
+
+    public BooleanProperty finalNodeProperty() {
+        return finalNode;
+    }
+
+    public void setFinalNode(boolean finalNode) {
+        this.finalNode.set(finalNode);
+    }
+
+    public boolean isStartNode() {
+        return startNode.get();
+    }
+
+    public BooleanProperty startNodeProperty() {
+        return startNode;
+    }
+
+    public void setStartNode(boolean startNode) {
+        this.startNode.set(startNode);
     }
 }

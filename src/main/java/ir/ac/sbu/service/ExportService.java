@@ -32,16 +32,17 @@ public class ExportService {
         for (GraphModel graphModel : graphs) {
             StringBuilder funcs = new StringBuilder();
             for (EdgeModel edgeModel : graphModel.getEdges()) {
-                if (!edgeModel.getFunc().equals("")) {
-                    if (!edgeModel.getGlobal())
-                        funcs.append(String.format(FUNCTION_TEMPLATE, edgeModel.getFunc()));
+                if (!edgeModel.getFunction().equals("")) {
+                    if (!edgeModel.isGlobal())
+                        funcs.append(String.format(FUNCTION_TEMPLATE, edgeModel.getFunction()));
                 }
             }
             String output = String.format(CLASS_TEMPLATE, graphModel.getName(), funcs.toString());
             makeFile(output, graphModel.getName());
 
         }
-        List<String> globalfunc = graphs.stream().flatMap(graphModel -> graphModel.getEdges().stream()).filter(EdgeModel::getGlobal).map(EdgeModel::getFunc).collect(Collectors.toList());
+        List<String> globalfunc = graphs.stream().flatMap(graphModel -> graphModel.getEdges().stream())
+                .filter(EdgeModel::isGlobal).map(EdgeModel::getFunction).collect(Collectors.toList());
         StringBuilder gfuncs = new StringBuilder();
         for (String func : globalfunc) {
             if (!func.equals("")) {

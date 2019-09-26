@@ -1,4 +1,4 @@
-package ir.ac.sbu.service;
+package ir.ac.sbu.service.jsonmodel;
 
 import ir.ac.sbu.model.GraphModel;
 
@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GraphJSON {
-    String name;
-    List<NodeJSON> nodes;
-    List<EdgeJSON> edges;
-
-    Integer start = -1;
+    private String name;
+    private List<NodeJSON> nodes;
+    private List<EdgeJSON> edges;
+    private int start = -1;
 
     public GraphJSON() {
     }
@@ -23,4 +22,19 @@ public class GraphJSON {
             start = g.getStart().getId();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public List<NodeJSON> getNodes() {
+        return nodes;
+    }
+
+    public List<EdgeJSON> getEdges() {
+        return edges;
+    }
+
+    public int getStart() {
+        return start;
+    }
 }

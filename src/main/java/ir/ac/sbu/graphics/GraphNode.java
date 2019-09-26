@@ -45,7 +45,7 @@ public class GraphNode extends StackPane {
         n.xProperty().bind(layoutXProperty().add(radius));
         n.yProperty().bind(layoutYProperty().add(radius));
 
-        if (n.getFinal()) {
+        if (n.isFinalNode()) {
             circle.setFill(Color.RED);
         } else {
             circle.setFill(color.deriveColor(1, 1, 1, 1));
@@ -56,7 +56,7 @@ public class GraphNode extends StackPane {
             circle.setStroke(color);
         }
 
-        n.finalProperty().addListener((observable, oldValue, newValue) ->
+        n.finalNodeProperty().addListener((observable, oldValue, newValue) ->
         {
             if (newValue) {
                 circle.setFill(Color.RED);
@@ -65,7 +65,7 @@ public class GraphNode extends StackPane {
             }
         });
 
-        n.startProperty().addListener((observable, oldValue, newValue) ->
+        n.startNodeProperty().addListener((observable, oldValue, newValue) ->
         {
             if (newValue) {
                 circle.setStroke(Color.GREEN);
@@ -77,21 +77,10 @@ public class GraphNode extends StackPane {
         text.setBoundsType(TextBoundsType.VISUAL);
         getChildren().addAll(circle, text);
         setAlignment(Pos.CENTER);
-        //  setPrefSize(30,30);
-//        setStyle("-fx-background-color:crimson");
 
         enableDrag();
         setMouseTransparent(false);
-
-
-// ...
-
     }
-//
-//    public void setOnClick(EventHandler<MouseEvent> onClick)
-//    {
-//        this.onClick = onClick;
-//    }
 
     public NodeModel getNode() {
         return node;
@@ -162,14 +151,12 @@ public class GraphNode extends StackPane {
 
         deleteBtn.setOnAction(this::delete);
         CheckMenuItem finalBtn = new CheckMenuItem("Final");
-        finalBtn.selectedProperty().set(node.getFinal());
-        node.finalProperty().bind(finalBtn.selectedProperty());
+        finalBtn.selectedProperty().set(node.isFinalNode());
+        node.finalNodeProperty().bind(finalBtn.selectedProperty());
 
         CheckMenuItem startBtn = new CheckMenuItem("Start");
-        startBtn.selectedProperty().set(node.startProperty().getValue());
-        startBtn.setOnAction(event1 -> {
-            node.getGraph().setStart(node);
-        });
+        startBtn.selectedProperty().set(node.startNodeProperty().getValue());
+        startBtn.setOnAction(event1 -> node.getGraph().setStart(node));
         contextMenu.getItems().clear();
         contextMenu.getItems().addAll(deleteBtn, finalBtn, startBtn);
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
