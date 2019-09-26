@@ -2,18 +2,19 @@ package ir.ac.sbu.command;
 
 import ir.ac.sbu.controller.RefreshableController;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class CommandManager {
     private static CommandManager instance;
-    Stack<Command> cmds;
-    Stack<Command> redoCmds;
-    RefreshableController controller;
+    private Deque<Command> commands;
+    private Deque<Command> redoCommands;
+    private RefreshableController controller;
 
     private CommandManager(RefreshableController controller) {
         this.controller = controller;
-        cmds = new Stack<>();
-        redoCmds = new Stack<>();
+        commands = new ArrayDeque<>();
+        redoCommands = new ArrayDeque<>();
     }
 
     public static CommandManager getInstance() {
@@ -26,27 +27,26 @@ public class CommandManager {
 
     public void applyCommand(Command command) {
         command.apply();
-        cmds.push(command);
+        commands.push(command);
         controller.refresh();
-        redoCmds.clear();
+        redoCommands.clear();
     }
 
     public void rollBack() {
-        if (cmds.size() > 0) {
-            Command undoCmd = cmds.pop();
+        if (commands.size() > 0) {
+            Command undoCmd = commands.pop();
             undoCmd.rollBack();
-            redoCmds.push(undoCmd);
+            redoCommands.push(undoCmd);
             controller.refresh();
         }
     }
 
     public void redoCommand() {
-        if (redoCmds.size() > 0) {
-            Command cmd = redoCmds.pop();
+        if (redoCommands.size() > 0) {
+            Command cmd = redoCommands.pop();
             cmd.apply();
-            cmds.push(cmd);
+            commands.push(cmd);
             controller.refresh();
         }
-
     }
 }
