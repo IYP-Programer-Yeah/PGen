@@ -2,9 +2,6 @@ package ir.ac.sbu.service;
 
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.GraphModel;
-import ir.ac.sbu.utility.DialogUtility;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,29 +24,26 @@ public class ExportService {
             throw new RuntimeException(e);
         }
 
-        String CLASS_TEMPLATE = "public class %s\n{%s}\n";
-        String FUNCTION_TEMPLATE = "public static void %s()\n{\n}";
+        String CLASS_TEMPLATE = "public class %s { \n%s}\n";
+        String FUNCTION_TEMPLATE = "public static void %s() {} \n";
         for (GraphModel graphModel : graphs) {
-            StringBuilder funcs = new StringBuilder();
+            StringBuilder functions = new StringBuilder();
             for (EdgeModel edgeModel : graphModel.getEdges()) {
-                if (!edgeModel.getFunction().equals("")) {
-                    if (!edgeModel.isGlobal())
-                        funcs.append(String.format(FUNCTION_TEMPLATE, edgeModel.getFunction()));
+                if (!edgeModel.getFunction().equals("") && !edgeModel.isGlobal()) {
+                    functions.append(String.format(FUNCTION_TEMPLATE, edgeModel.getFunction()));
                 }
             }
-            String output = String.format(CLASS_TEMPLATE, graphModel.getName(), funcs.toString());
+            String output = String.format(CLASS_TEMPLATE, graphModel.getName(), functions.toString().replaceAll("(?m)^", "\t"));
             makeFile(output, graphModel.getName());
+        }
 
+        List<String> globalFunctions = graphs.stream().flatMap(graphModel -> graphModel.getEdges().stream())
+                .filter(EdgeModel::isGlobal).map(EdgeModel::getFunction).filter(x -> !x.equals("")).collect(Collectors.toList());
+        StringBuilder globalFunctionsBuilder = new StringBuilder();
+        for (String func : globalFunctions) {
+            globalFunctionsBuilder.append(String.format(FUNCTION_TEMPLATE, func));
         }
-        List<String> globalfunc = graphs.stream().flatMap(graphModel -> graphModel.getEdges().stream())
-                .filter(EdgeModel::isGlobal).map(EdgeModel::getFunction).collect(Collectors.toList());
-        StringBuilder gfuncs = new StringBuilder();
-        for (String func : globalfunc) {
-            if (!func.equals("")) {
-                gfuncs.append(String.format(FUNCTION_TEMPLATE, func));
-            }
-        }
-        String output = String.format(CLASS_TEMPLATE, "Global", gfuncs.toString());
+        String output = String.format(CLASS_TEMPLATE, "Global", globalFunctionsBuilder.toString().replaceAll("(?m)^", "\t"));
         makeFile(output, "Global");
     }
 
