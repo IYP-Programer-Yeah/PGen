@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodeModel {
-
-    static int _id = 0;
-    StringProperty name;
     DoubleProperty x = new SimpleDoubleProperty();
 
     List<EdgeModel> adjacent = new ArrayList<>();
@@ -18,15 +15,11 @@ public class NodeModel {
     GraphModel graph;
     int id;
 
-    public NodeModel(double x, double y, GraphModel graph) {
+    public NodeModel(double x, double y, GraphModel graph, int id) {
         this.x.setValue(x);
         this.y.setValue(y);
         this.graph = graph;
-        id = _id++;
-    }
-
-    public static void setCounter(int _id) {
-        NodeModel._id = _id;
+        this.id = id;
     }
 
     public boolean isStart() {

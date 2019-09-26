@@ -153,10 +153,8 @@ public class BoundLine extends CubicCurve {
 
         Point2D ori = eval(this, 0.5);
 
-//        System.out.println("Ori " + ori.getX()+ " " +ori.getY());
         anchor.setCenterX(ori.getX());
         anchor.setCenterY(ori.getY());
-
     }
 
     private void showPropertiesDialog() {
