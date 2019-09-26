@@ -16,7 +16,7 @@ public class LLCell {
         this.action = action;
         this.target = target;
         this.func = func;
-        if (this.func.equals("") || this.func == null)
+        if (this.func == null || this.func.equals(""))
             this.func = "NoSem";
         else
             this.func = "@" + this.func;

@@ -68,8 +68,6 @@
                 <children>
                     <Label text="Pouya Payandeh"/>
                     <Label text="pouya.payandeh@gmail.com"/>
-                    <Label text="Amin Borjian"/>
-                    <Label text="borjianamin98@outlook.com"/>
                 </children>
             </VBox>
         </children>

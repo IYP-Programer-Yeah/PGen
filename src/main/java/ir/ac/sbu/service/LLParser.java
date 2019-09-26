@@ -17,43 +17,38 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LLParser {
-    final String EPSILON = "$epsilon";
-    final String EOF = "$";
+    private final String EPSILON = "$epsilon";
+    private final String EOF = "$";
 
-    private List<String> check(List<GraphModel> graphs) {
+    private void check(List<GraphModel> graphs) throws TableException {
         List<String> messages = new ArrayList<>();
         Set<String> extractExpectedGraphs = graphs.stream().flatMap(graph -> graph.getEdges().stream()).
                 filter(EdgeModel::getGraph).map(EdgeModel::getToken).collect(Collectors.toSet());
         Set<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
-
         extractExpectedGraphs.removeAll(givenGraphs);
+        extractExpectedGraphs.forEach(s -> messages.add(String.format("Graph %s doesn't Exist", s)));
 
-
-        extractExpectedGraphs.
-                forEach(s -> messages.add(String.format("Graph %s doesn't Exist", s)));
-
-        List<GraphModel> woFinals = graphs.stream().
+        List<GraphModel> graphWithNoFinalNode = graphs.stream().
                 filter(graph -> graph.getNodes().stream().noneMatch(NodeModel::getFinal)).collect(Collectors.toList());
-        woFinals.forEach(graph -> messages.add(String.format("Graph %s doesn't have final  Node", graph.getName())));
-        List<GraphModel> woStart = graphs.stream().
-                filter(graph -> graph.getStart() == null).collect(Collectors.toList());
-        woStart.forEach(graph -> messages.add(String.format("Graph %s doesn't have start Node", graph.getName())));
-
-        return messages;
+        graphWithNoFinalNode.forEach(graph -> messages.add(String.format("Graph %s doesn't have final node", graph.getName())));
+        List<GraphModel> graphWithNoStartNode = graphs.stream().filter(graph -> graph.getStart() == null).collect(Collectors.toList());
+        graphWithNoStartNode.forEach(graph -> messages.add(String.format("Graph %s doesn't have start node", graph.getName())));
+        if (!messages.isEmpty()) {
+            throw new TableException(messages);
+        }
     }
 
     public Pair<LLCell[][], Integer> buildTable(List<GraphModel> graphs, Map<String, Integer> tokensInt) throws TableException {
         int startNode = 0;
-        List<String> messages = check(graphs);
-        if (messages.size() > 0)
-            throw new TableException(messages);
-        ArrayList<String> tokens = new ArrayList<>(graphs.stream().
+        check(graphs);
+        List<String> messages = new ArrayList<>();
+        ArrayList<String> tokens = graphs.stream().
                 flatMap(graph -> graph.getEdges().stream()).filter(edge -> !edge.getGraph()).
-                map(EdgeModel::getToken).collect(Collectors.toSet()));
+                map(EdgeModel::getToken).distinct().collect(Collectors.toCollection(ArrayList::new));
         tokens.add(0, EOF);
 
         Set<String> vars = graphs.stream().
-                flatMap(graph -> graph.getEdges().stream()).filter(edge -> edge.getGraph()).
+                flatMap(graph -> graph.getEdges().stream()).filter(EdgeModel::getGraph).
                 map(EdgeModel::getToken).collect(Collectors.toSet());
 
         Set<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
@@ -138,14 +133,14 @@ public class LLParser {
                         } else {
                             if (firsts.get("$" + edge.getEnd().getId()).contains(EPSILON)) {
                                 if (node.getId() == 274)
-                                follows.get("$" + node.getId()).forEach(ss ->
-                                        {
-                                            if (table[node.getId()][tokensInt.get(ss)].action == LLCell.PUSH_GOTO ||
-                                                    table[node.getId()][tokensInt.get(ss)].action == LLCell.SHIFT)
-                                                messages.add(String.format("Follow Set Collision in node %d and token \"%s\"", node.getId(), ss));
-                                            table[node.getId()][tokensInt.get(ss)] = new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
-                                        }
-                                );
+                                    follows.get("$" + node.getId()).forEach(ss ->
+                                            {
+                                                if (table[node.getId()][tokensInt.get(ss)].action == LLCell.PUSH_GOTO ||
+                                                        table[node.getId()][tokensInt.get(ss)].action == LLCell.SHIFT)
+                                                    messages.add(String.format("Follow Set Collision in node %d and token \"%s\"", node.getId(), ss));
+                                                table[node.getId()][tokensInt.get(ss)] = new LLCell(LLCell.PUSH_GOTO, varGraph.get(edge.getToken()).getStart().getId(), "");
+                                            }
+                                    );
                             }
                         }
                     });
@@ -173,7 +168,7 @@ public class LLParser {
             try (PrintWriter writer = new PrintWriter(file)) {
                 writer.printf("%d %d\n", nodes.size(), table[0].length);
                 writer.printf("%d\n", startNode);
-                List<String> list = tokensInt.keySet().stream().sorted((o1, o2) -> tokensInt.get(o1) - tokensInt.get(o2)).collect(Collectors.toList());
+                List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 list.forEach(s -> writer.printf("%s ", s));
                 writer.println();
                 for (LLCell[] llCells : table) {
@@ -200,8 +195,7 @@ public class LLParser {
             LLCell[][] table = tableInfo.getKey();
             ;
             try (PrintWriter writer = new PrintWriter(file)) {
-                List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
-                List<String> headersList = new ArrayList<>(list);
+                List<String> headersList = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 headersList.add(0, "States");
                 writer.println();
                 List<Integer> colAlignList = new ArrayList<>();
@@ -262,8 +256,7 @@ public class LLParser {
             LLCell[][] table = tableInfo.getKey();
             try (PrintWriter writer = new PrintWriter(file)) {
                 StringBuffer blocksText = new StringBuffer();
-                List<String> list = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
-                List<String> headersList = new ArrayList<>(list);
+                List<String> headersList = tokensInt.keySet().stream().sorted(Comparator.comparingInt(tokensInt::get)).collect(Collectors.toList());
                 headersList.add(0, "States");
                 List<Integer> colAlignList = new ArrayList<>();
                 for (int i = 0; i < headersList.size(); i++) {
@@ -330,7 +323,7 @@ public class LLParser {
 
     public Map<String, Set<String>> getFirstSets(List<GraphModel> graphs) {
         Set<String> vars = graphs.stream().
-                flatMap(graph -> graph.getEdges().stream()).filter(edge -> edge.getGraph()).
+                flatMap(graph -> graph.getEdges().stream()).filter(EdgeModel::getGraph).
                 map(EdgeModel::getToken).collect(Collectors.toSet());
 
         Set<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
@@ -403,7 +396,7 @@ public class LLParser {
 
         Map<String, Set<String>> follows = new HashMap<>();
         Set<String> vars = graphs.stream().
-                flatMap(graph -> graph.getEdges().stream()).filter(edge -> edge.getGraph()).
+                flatMap(graph -> graph.getEdges().stream()).filter(EdgeModel::getGraph).
                 map(EdgeModel::getToken).collect(Collectors.toSet());
 
         Set<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
