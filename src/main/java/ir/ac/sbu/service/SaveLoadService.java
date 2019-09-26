@@ -2,6 +2,7 @@ package ir.ac.sbu.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.utility.GenerateUID;
 import javafx.scene.control.ListView;
 import ir.ac.sbu.model.EdgeModel;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 
 public class SaveLoadService {
-    File file;
+    private File file;
 
     public SaveLoadService(File selectedDirectory) {
         file = selectedDirectory;
@@ -30,14 +31,10 @@ public class SaveLoadService {
         List<GraphJSON> graphJSONs = graphs.stream().map(GraphJSON::new).collect(Collectors.toList());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String out = gson.toJson(graphJSONs);
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(file);
-            System.out.println("File Saved");
+        try (PrintWriter writer = new PrintWriter(file)) {
             writer.print(out);
-            writer.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            DialogUtility.showErrorDialog(e.getMessage());
         }
 
     }

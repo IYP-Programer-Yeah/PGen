@@ -138,7 +138,6 @@ public class LLParser {
                         } else {
                             if (firsts.get("$" + edge.getEnd().getId()).contains(EPSILON)) {
                                 if (node.getId() == 274)
-                                    System.out.println("HERTE");
                                 follows.get("$" + node.getId()).forEach(ss ->
                                         {
                                             if (table[node.getId()][tokensInt.get(ss)].action == LLCell.PUSH_GOTO ||
