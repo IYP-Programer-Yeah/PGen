@@ -48,7 +48,7 @@
     </ToolBar>
     <SplitPane dividerPositions="1.0" VBox.vgrow="ALWAYS">
         <ListView fx:id="list" minWidth="100" maxWidth="200"/>
-        <ScrollPane fx:id="scrollpane">
+        <ScrollPane fx:id="scrollPane">
             <AnchorPane fx:id="pane" minHeight="0.0" minWidth="0.0" prefHeight="4000" prefWidth="4000"/>
         </ScrollPane>
     </SplitPane>

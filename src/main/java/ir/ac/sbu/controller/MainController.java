@@ -1,5 +1,13 @@
 package ir.ac.sbu.controller;
 
+import ir.ac.sbu.command.CommandManager;
+import ir.ac.sbu.model.GraphModel;
+import ir.ac.sbu.model.NodeModel;
+import ir.ac.sbu.service.ExportService;
+import ir.ac.sbu.service.LLParser;
+import ir.ac.sbu.service.SaveLoadService;
+import ir.ac.sbu.utility.DialogUtility;
+import ir.ac.sbu.utility.GenerateUID;
 import ir.ac.sbu.utility.ResourceUtility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,50 +21,43 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import ir.ac.sbu.command.CommandManager;
-import ir.ac.sbu.graphics.MessageAlert;
-import ir.ac.sbu.model.GraphModel;
-import ir.ac.sbu.model.NodeModel;
-import ir.ac.sbu.service.ExportService;
-import ir.ac.sbu.service.LLParser;
-import ir.ac.sbu.service.Message;
-import ir.ac.sbu.service.SaveLoadService;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MainController {
     @FXML
-    public ListView<GraphModel> list;
+    private ListView<GraphModel> list;
     @FXML
-    public AnchorPane pane;
+    private AnchorPane pane;
     @FXML
-    public VBox mainContainer;
+    private VBox mainContainer;
     @FXML
-    public MenuItem exportMenuItem;
+    private MenuItem exportMenuItem;
     @FXML
-    public MenuItem checkMenuItem;
+    private MenuItem checkMenuItem;
     @FXML
-    public MenuItem saveMenuItem;
+    private MenuItem saveMenuItem;
     @FXML
-    public MenuItem loadMenuItem;
-    public ScrollPane scrollpane;
-    public Button addGraphBtn;
-    public MenuItem aboutMenuItem;
-    public MenuItem exportTableMenuItem;
-    public MenuItem exportCSVTableMenuItem;
+    private MenuItem loadMenuItem;
+    @FXML
+    private ScrollPane scrollPane;
+    @FXML
+    private Button addGraphBtn;
+    @FXML
+    private MenuItem aboutMenuItem;
+    @FXML
+    private MenuItem exportTableMenuItem;
+    @FXML
+    private MenuItem exportCSVTableMenuItem;
 
-    DrawPaneController drawPaneController;
-
-    ObservableList<GraphModel> graphs = FXCollections.observableArrayList();
+    private DrawPaneController drawPaneController;
+    private ObservableList<GraphModel> graphs = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -65,12 +66,14 @@ public class MainController {
         GraphModel graph = new GraphModel("MAIN");
         drawPaneController.setGraph(graph);
         list.setItems(graphs);
-        graphs.addAll(graph);
+        graphs.add(graph);
+
         list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
             drawPaneController.setGraph(newValue);
             drawPaneController.refresh();
         });
+
         list.setCellFactory(param ->
         {
             ListCell<GraphModel> cell = new ListCell<GraphModel>() {
@@ -88,27 +91,18 @@ public class MainController {
             ContextMenu contextMenu = new ContextMenu();
             MenuItem deleteBtn = new MenuItem("Delete");
             MenuItem renameBtn = new MenuItem("Rename");
-//
-            deleteBtn.setOnAction(event -> {
 
-                cell.getListView().getItems().remove(cell.getItem());
-            });
+            deleteBtn.setOnAction(event -> cell.getListView().getItems().remove(cell.getItem()));
             renameBtn.setOnAction(event ->
-            {
-                TextInputDialog dialog = new TextInputDialog(cell.getItem().getName());
-                dialog.setTitle("dialog");
-                dialog.setHeaderText("Enter a Name");
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(s -> cell.getItem().setName(s));
-            });
+                    DialogUtility.showInputDialog(cell.getItem().getName(), "Rename graph")
+                            .ifPresent(s -> cell.getItem().setName(s)));
+
             contextMenu.getItems().addAll(deleteBtn, renameBtn);
-            // cell.textProperty().bind(cell.itemProperty());
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
                     if (cell.getItem() == null) {
                         cell.textProperty().unbind();
-//                        cell.setGraphic(null);
                         cell.setText("");
                     }
                 } else {
@@ -120,7 +114,6 @@ public class MainController {
                 }
             });
             return cell;
-
         });
 
         mainContainer.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
@@ -137,67 +130,40 @@ public class MainController {
     private void build(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save Table To");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("npt File", "*.npt"));
-        File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Table to", "*.npt");
         if (selectedFile != null) {
-            List<Message> msgs = parser.buildTable(graphs, selectedFile);
-            ShowMessages(msgs);
-
+            ShowMessages(parser.buildTable(graphs, selectedFile));
         }
     }
 
     private void prettyTable(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save Pretty Table to");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("prt File", "*.prt"));
-        File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");
         if (selectedFile != null) {
-            List<Message> msgs = parser.buildPrettyTable(graphs, selectedFile);
-            ShowMessages(msgs);
-
+            ShowMessages(parser.buildPrettyTable(graphs, selectedFile));
         }
     }
 
     private void csvTable(ActionEvent actionEvent) {
         renumber(null);
         LLParser parser = new LLParser();
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save CSV Table to");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("csv File", "*.csv"));
-        File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save CSV Table to", "*.csv");
         if (selectedFile != null) {
-            List<Message> msgs = parser.buildCSVTable(graphs, selectedFile);
-            ShowMessages(msgs);
-
+            ShowMessages(parser.buildCSVTable(graphs, selectedFile));
         }
     }
 
-    private void ShowMessages(List<Message> msgs) {
-        if (msgs.size() > 0) {
-            String msg = msgs.stream().map(message -> message.getMessage() + "\n").reduce(String::concat).get();
-            MessageAlert alert = new MessageAlert(Alert.AlertType.ERROR, msg, "Error");
-            alert.showAndWait();
+    private void ShowMessages(List<String> messages) {
+        if (messages.isEmpty()) {
+            DialogUtility.showSuccessDialog("Successful!");
         } else {
-            MessageAlert alert = new MessageAlert(Alert.AlertType.INFORMATION, "", "Success");
-            alert.showAndWait();
+            DialogUtility.showErrorDialog(messages);
         }
     }
 
     private void load(ActionEvent actionEvent) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("JavaFX Projects");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PGEN Save File (PGS)", "*.pgs")
-                , new FileChooser.ExtensionFilter("ALL", "*")
-        );
-        File selectedFile = chooser.showOpenDialog(pane.getScene().getWindow());
+        File selectedFile = DialogUtility.showOpenDialog(pane.getScene().getWindow(), "*.pgs");
         if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
             exportService.load(list);
@@ -208,13 +174,7 @@ public class MainController {
 
     private void save(ActionEvent actionEvent) {
         renumber(null);
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("JavaFX Projects");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PGEN Save File (PGS)", "*.pgs")
-                , new FileChooser.ExtensionFilter("ALL", "*")
-        );
-        File selectedFile = chooser.showSaveDialog(pane.getScene().getWindow());
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save PGen File", "*.pgs");
         if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
             exportService.save(graphs);
@@ -222,16 +182,11 @@ public class MainController {
     }
 
     private void export(ActionEvent actionEvent) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("JavaFX Projects");
-
-        File selectedDirectory = chooser.showDialog(pane.getScene().getWindow());
+        File selectedDirectory = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
         if (selectedDirectory != null) {
             ExportService exportService = new ExportService(selectedDirectory);
             exportService.exportGraphs(graphs);
-            MessageAlert alert = new MessageAlert(Alert.AlertType.INFORMATION, "", "Success");
-            alert.showAndWait();
-
+            DialogUtility.showSuccessDialog("Exported successfully");
         }
     }
 
@@ -280,7 +235,7 @@ public class MainController {
         for (int i = 0; i < nodes.size(); i++) {
             nodes.get(i).setId(i);
         }
-        NodeModel.setCounter(nodes.size());
+        GenerateUID.setIdCounter(nodes.size());
         drawPaneController.refresh();
     }
 

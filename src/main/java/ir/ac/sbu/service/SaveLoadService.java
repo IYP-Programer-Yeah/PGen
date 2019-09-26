@@ -2,6 +2,7 @@ package ir.ac.sbu.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import ir.ac.sbu.utility.GenerateUID;
 import javafx.scene.control.ListView;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.GraphModel;
@@ -52,7 +53,7 @@ public class SaveLoadService {
                 GraphModel graphModel = new GraphModel(graph.name);
                 Map<Integer, NodeModel> nodes = new HashMap<>();
                 graph.nodes.forEach(nodeJSON -> {
-                    NodeModel node = new NodeModel(nodeJSON.x, nodeJSON.y, graphModel);
+                    NodeModel node = new NodeModel(nodeJSON.x, nodeJSON.y, graphModel, GenerateUID.createID());
                     node.setId(nodeJSON.id);
                     node.setFinal(nodeJSON.isFinal);
                     nodes.put(node.getId(), node);
@@ -77,7 +78,7 @@ public class SaveLoadService {
                 });
                 list.getItems().add(graphModel);
             });
-            NodeModel.setCounter(list.getItems().stream().
+            GenerateUID.setIdCounter(list.getItems().stream().
                     flatMap(graphModel -> graphModel.getNodes().stream()).map(NodeModel::getId).max(Integer::compareTo).get() + 1);
 
         } catch (FileNotFoundException e) {

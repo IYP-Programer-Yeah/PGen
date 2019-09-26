@@ -2,14 +2,15 @@ package ir.ac.sbu.command;
 
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
+import ir.ac.sbu.utility.GenerateUID;
 
 public class MakeNodeCmd implements Command {
-    GraphModel graphModel;
-    NodeModel node;
+    private GraphModel graphModel;
+    private NodeModel node;
 
     public MakeNodeCmd(GraphModel graphModel, double x, double y) {
         this.graphModel = graphModel;
-        node = new NodeModel(x, y, graphModel);
+        node = new NodeModel(x, y, graphModel, GenerateUID.createID());
     }
 
     @Override

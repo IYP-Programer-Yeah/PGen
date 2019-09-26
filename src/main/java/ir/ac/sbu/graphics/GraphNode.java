@@ -112,16 +112,10 @@ public class GraphNode extends StackPane {
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
                 System.out.println(mouseY);
-            } else {
-                //  System.out.println(node.id);
-
             }
             event.consume();
         });
         setOnMouseClicked(event -> {
-
-//                onClick.handle(event);
-            System.out.println("Here");
             if (event.isShiftDown() && onShiftClick != null) {
                 onShiftClick.handle(event);
             }
