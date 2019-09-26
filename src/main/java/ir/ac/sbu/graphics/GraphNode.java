@@ -21,18 +21,17 @@ import ir.ac.sbu.command.DeleteNodeCmd;
 import ir.ac.sbu.model.NodeModel;
 
 public class GraphNode extends StackPane {
-    private final double radius = 10;
-    Circle circle;
-    Text text;
-    NodeModel node;
-    Color color = Color.AQUA;
-    EventHandler<MouseEvent> onShiftClick;
-    double mouseX;
-    double mouseY;
-    ContextMenu contextMenu = new ContextMenu();
+    private Circle circle;
+    private NodeModel node;
+    private Color color = Color.AQUA;
+    private EventHandler<MouseEvent> onShiftClick;
+    private double mouseX;
+    private double mouseY;
+    private ContextMenu contextMenu = new ContextMenu();
 
     public GraphNode(NodeModel n) {
         this.node = n;
+        double radius = 10;
         circle = new Circle(n.getX(), n.getY(), radius);
 
         circle.setFill(color.deriveColor(1, 1, 1, 1));
@@ -73,7 +72,7 @@ public class GraphNode extends StackPane {
                 circle.setStroke(color);
             }
         });
-        text = new Text(String.valueOf(n.getId()));
+        Text text = new Text(String.valueOf(n.getId()));
         text.setBoundsType(TextBoundsType.VISUAL);
         getChildren().addAll(circle, text);
         setAlignment(Pos.CENTER);
@@ -125,8 +124,6 @@ public class GraphNode extends StackPane {
                 relocate(getLayoutX() + deltaX, getLayoutY() + deltaY);
                 mouseX = event.getSceneX();
                 mouseY = event.getSceneY();
-            } else {
-
             }
         });
         setOnMouseReleased(mouseEvent -> {
@@ -146,7 +143,6 @@ public class GraphNode extends StackPane {
     }
 
     private void showContextMenu(MouseEvent event) {
-
         MenuItem deleteBtn = new MenuItem("Delete");
 
         deleteBtn.setOnAction(this::delete);
@@ -165,5 +161,4 @@ public class GraphNode extends StackPane {
     private void delete(ActionEvent actionEvent) {
         CommandManager.getInstance().applyCommand(new DeleteNodeCmd(node));
     }
-
 }
