@@ -2,6 +2,7 @@ package ir.ac.sbu.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import ir.ac.sbu.service.jsonmodel.GraphJSON;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.utility.GenerateUID;
 import javafx.scene.control.ListView;
@@ -47,29 +48,29 @@ public class SaveLoadService {
             graphJSONs = Arrays.asList(gson.fromJson(new FileReader(file), GraphJSON[].class));
             graphJSONs.forEach(graph ->
             {
-                GraphModel graphModel = new GraphModel(graph.name);
+                GraphModel graphModel = new GraphModel(graph.getName());
                 Map<Integer, NodeModel> nodes = new HashMap<>();
-                graph.nodes.forEach(nodeJSON -> {
-                    NodeModel node = new NodeModel(nodeJSON.x, nodeJSON.y, graphModel, GenerateUID.createID());
-                    node.setId(nodeJSON.id);
-                    node.setFinal(nodeJSON.isFinal);
+                graph.getNodes().forEach(nodeJSON -> {
+                    NodeModel node = new NodeModel(nodeJSON.getX(), nodeJSON.getY(), graphModel, GenerateUID.createID());
+                    node.setId(nodeJSON.getId());
+                    node.setFinalNode(nodeJSON.isFinal());
                     nodes.put(node.getId(), node);
                     graphModel.getNodes().add(node);
                 });
-                if (graph.start != -1)
-                    if (graphModel.getNodes().stream().anyMatch(nodeJSON -> nodeJSON.getId() == graph.start))
-                        graphModel.setStart(graphModel.getNodes().stream().filter(nodeJSON -> nodeJSON.getId() == graph.start).findFirst().get());
-                graph.edges.forEach(edgeJSON ->
+                if (graph.getStart() != -1)
+                    if (graphModel.getNodes().stream().anyMatch(nodeJSON -> nodeJSON.getId() == graph.getStart()))
+                        graphModel.setStart(graphModel.getNodes().stream().filter(nodeJSON -> nodeJSON.getId() == graph.getStart()).findFirst().get());
+                graph.getEdges().forEach(edgeJSON ->
                 {
-                    NodeModel start = nodes.get(edgeJSON.start);
-                    NodeModel end = nodes.get(edgeJSON.end);
+                    NodeModel start = nodes.get(edgeJSON.getStart());
+                    NodeModel end = nodes.get(edgeJSON.getEnd());
                     EdgeModel edge = new EdgeModel(start, end);
-                    edge.setFunc(edgeJSON.func);
-                    edge.setToken(edgeJSON.token);
-                    edge.anchorXProperty().setValue(edgeJSON.anchorX);
-                    edge.anchorYProperty().setValue(edgeJSON.anchorY);
-                    edge.setGraph(edgeJSON.isGraph);
-                    edge.setGlobal(edgeJSON.isGlobal);
+                    edge.setFunction(edgeJSON.getFunc());
+                    edge.setToken(edgeJSON.getToken());
+                    edge.anchorXProperty().setValue(edgeJSON.getAnchorX());
+                    edge.anchorYProperty().setValue(edgeJSON.getAnchorY());
+                    edge.setGraph(edgeJSON.isGraph());
+                    edge.setGlobal(edgeJSON.isGlobal());
                     start.getAdjacent().add(edge);
 
                 });

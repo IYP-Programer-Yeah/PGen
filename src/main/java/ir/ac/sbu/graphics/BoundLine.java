@@ -63,7 +63,7 @@ public class BoundLine extends CubicCurve {
             calArrow(null, 0, 0);
         });
         this.edge = edge;
-        text = new Text(edge.getToken() + "/@" + edge.getFunc());
+        text = new Text(edge.getToken() + "/@" + edge.getFunction());
         text.xProperty().bind(edge.anchorXProperty().add(10));
         text.yProperty().bind(edge.anchorYProperty());
 
@@ -74,7 +74,7 @@ public class BoundLine extends CubicCurve {
         calCurve(null, 0, 0);
         calArrow(null, 0, 0);
 
-        if (edge.getGraph())
+        if (edge.isGraph())
             text.setFill(Color.RED);
         else
             text.setFill(Color.BLACK);

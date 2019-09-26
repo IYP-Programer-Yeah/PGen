@@ -27,9 +27,9 @@ public class EdgePropertiesController {
     public void init(EdgeModel edge) {
         this.edge = edge;
         tokenText.setText(edge.getToken());
-        funcText.setText(edge.getFunc());
-        globalChk.setSelected(edge.getGlobal());
-        graphChk.setSelected(edge.getGraph());
+        funcText.setText(edge.getFunction());
+        globalChk.setSelected(edge.isGlobal());
+        graphChk.setSelected(edge.isGraph());
     }
 
     public void apply(ActionEvent actionEvent) {

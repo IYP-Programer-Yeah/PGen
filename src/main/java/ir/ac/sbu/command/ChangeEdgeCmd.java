@@ -26,12 +26,12 @@ public class ChangeEdgeCmd implements ir.ac.sbu.command.Command {
     @Override
     public void apply() {
         _token = edgeModel.getToken();
-        _func = edgeModel.getFunc();
-        _graph = edgeModel.getGraph();
-        _global = edgeModel.getGlobal();
+        _func = edgeModel.getFunction();
+        _graph = edgeModel.isGraph();
+        _global = edgeModel.isGlobal();
 
 
-        edgeModel.setFunc(func);
+        edgeModel.setFunction(func);
         edgeModel.setToken(token);
         edgeModel.setGlobal(global);
         edgeModel.setGraph(graph);
@@ -41,7 +41,7 @@ public class ChangeEdgeCmd implements ir.ac.sbu.command.Command {
     @Override
     public void rollBack() {
 
-        edgeModel.setFunc(_func);
+        edgeModel.setFunction(_func);
         edgeModel.setToken(_token);
         edgeModel.setGlobal(_graph);
         edgeModel.setGraph(_graph);

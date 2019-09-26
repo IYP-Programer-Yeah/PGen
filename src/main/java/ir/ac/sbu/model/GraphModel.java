@@ -9,24 +9,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GraphModel {
-    StringProperty name;
-    List<NodeModel> nodes = new ArrayList<NodeModel>();
-    NodeModel start = null;
+    private StringProperty name;
+    private List<NodeModel> nodes;
+    private NodeModel start;
+
+    public GraphModel() {
+    }
 
     public GraphModel(String name) {
         this.name = new SimpleStringProperty(name);
+        nodes = new ArrayList<>();
     }
 
     public String getName() {
         return name.get();
     }
 
+    public StringProperty nameProperty() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name.set(name);
     }
 
-    public StringProperty nameProperty() {
-        return name;
+    public void setNodes(List<NodeModel> nodes) {
+        this.nodes = nodes;
     }
 
     public NodeModel getStart() {
@@ -35,15 +43,14 @@ public class GraphModel {
 
     public void setStart(NodeModel start) {
         if (this.start != null)
-            this.start.setStart(false);
+            this.start.setStartNode(false);
         this.start = start;
-        start.setStart(true);
+        start.setStartNode(true);
     }
 
     public List<NodeModel> getNodes() {
         return nodes;
     }
-
 
     @Override
     public String toString() {
@@ -51,8 +58,6 @@ public class GraphModel {
     }
 
     public List<EdgeModel> getEdges() {
-        ArrayList<EdgeModel> edges = new ArrayList<>();
-        List<EdgeModel> res = nodes.stream().map(NodeModel::getAdjacent).flatMap(Collection::stream).collect(Collectors.toList());
-        return res;
+        return nodes.stream().map(NodeModel::getAdjacent).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }
