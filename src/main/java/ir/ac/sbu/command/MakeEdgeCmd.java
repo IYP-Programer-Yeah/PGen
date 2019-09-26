@@ -4,13 +4,12 @@ import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.NodeModel;
 
 public class MakeEdgeCmd implements Command {
-    NodeModel start, end;
-    EdgeModel edge;
+    private NodeModel start;
+    private EdgeModel edge;
 
     public MakeEdgeCmd(NodeModel start, NodeModel end) {
         this.start = start;
-        this.end = end;
-        edge = new EdgeModel(start, end);
+        this.edge = new EdgeModel(start, end);
     }
 
     @Override

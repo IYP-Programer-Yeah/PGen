@@ -10,7 +10,7 @@ public class MakeNodeCmd implements Command {
 
     public MakeNodeCmd(GraphModel graphModel, double x, double y) {
         this.graphModel = graphModel;
-        node = new NodeModel(x, y, graphModel, GenerateUID.createID());
+        this.node = new NodeModel(x, y, graphModel, GenerateUID.createID());
     }
 
     @Override

@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DeleteNodeCmd implements Command {
-    GraphModel graphModel;
-    NodeModel nodeModel;
-
-    List<EdgeModel> removedEdges;
+    private GraphModel graphModel;
+    private NodeModel nodeModel;
+    private List<EdgeModel> removedEdges;
 
     public DeleteNodeCmd(NodeModel nodeModel) {
         this.graphModel = nodeModel.getGraph();
