@@ -53,25 +53,16 @@
         </VBox.margin>
     </HBox>
     <HBox>
-        <children>
-            <Label text="Professor: "/>
-            <Label text="Ghassem Jaberipur"/>
-        </children>
         <VBox.margin>
             <Insets bottom="10.0"/>
         </VBox.margin>
+        <Label text="Professor: "/>
+        <Label text="Ghassem Jaberipur"/>
     </HBox>
-    <HBox>
-        <children>
-            <Label text="Written By: "/>
-            <VBox>
-                <children>
-                    <Label text="Pouya Payandeh"/>
-                    <Label text="pouya.payandeh@gmail.com"/>
-                </children>
-            </VBox>
-        </children>
-    </HBox>
+    <VBox>
+        <Label text="See contribution:"/>
+        <Label text="https://github.com/IYP-Programer-Yeah/PGen/graphs/contributors"/>
+    </VBox>
     <Button mnemonicParsing="false" onAction="#close" text="OK">
         <VBox.margin>
             <Insets bottom="5.0" top="15.0"/>

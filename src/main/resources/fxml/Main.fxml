@@ -23,6 +23,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Parser">
             <MenuItem mnemonicParsing="false" onAction="#renumber" text="Renumber"/>
+            <MenuItem mnemonicParsing="false" onAction="#checkGraphs" text="Check Graphs"/>
             <MenuItem fx:id="checkMenuItem" mnemonicParsing="false" text="Build Table"/>
             <MenuItem fx:id="exportTableMenuItem" mnemonicParsing="false" text="Build Pretty Table"/>
             <MenuItem fx:id="exportCSVTableMenuItem" mnemonicParsing="false" text="Build CSV Table"/>

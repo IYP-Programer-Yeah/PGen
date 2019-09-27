@@ -152,6 +152,17 @@ public class MainController {
         }
     }
 
+
+    public void checkGraphs(ActionEvent actionEvent) {
+        renumber(null);
+        try {
+            new LLParser(graphs);
+            DialogUtility.showSuccessDialog("There is no problem!");
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
+        }
+    }
+
     private void prettyTable(ActionEvent actionEvent) {
         renumber(null);
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");

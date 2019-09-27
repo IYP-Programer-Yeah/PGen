@@ -2,11 +2,12 @@ package ir.ac.sbu.utility;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -50,25 +51,25 @@ public class DialogUtility {
 
     public static void showSuccessDialog(String message) {
         Dialog<ButtonType> dialog = CustomDialogWithLabel("Result", "assets/dialog/Success.png", ButtonType.OK);
-        setSimpleContent(dialog, message);
+        setContent(dialog, new Label(message));
         dialog.showAndWait();
     }
 
     public static void showErrorDialog(String message) {
         Dialog<ButtonType> dialog = CustomDialogWithLabel("Result", "assets/dialog/Error.png", ButtonType.OK);
-        setSimpleContent(dialog, message);
+        setContent(dialog, new Label(message));
         dialog.showAndWait();
     }
 
     public static void showErrorDialog(List<String> messages) {
         Dialog<ButtonType> dialog = CustomDialogWithLabel("Result", "assets/dialog/Error.png", ButtonType.OK);
-        setListContent(dialog, messages);
+        setContent(dialog, new ListView<>(FXCollections.observableArrayList(messages)));
         dialog.showAndWait();
     }
 
     public static boolean showWarningDialog(String message) {
         Dialog<ButtonType> dialog = CustomDialogWithLabel("Confirmation", "assets/dialog/Warning.png", ButtonType.YES, ButtonType.NO);
-        setSimpleContent(dialog, message);
+        setContent(dialog, new Label(message));
         Optional<ButtonType> optional = dialog.showAndWait();
         return optional.isPresent() && optional.get() == ButtonType.YES;
     }
@@ -80,24 +81,19 @@ public class DialogUtility {
         dialog.setHeaderText(null);
         setIcon(dialog, iconPath);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypes);
+        dialog.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        dialog.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
         return dialog;
     }
 
-    private static void setSimpleContent(Dialog<ButtonType> dialog, String message) {
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10));
-        grid.add(new Label(message), 0, 0);
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-    }
+    private static void setContent(Dialog<ButtonType> dialog, Node content) {
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(10));
+        vBox.setPrefWidth(450);
+        vBox.getChildren().add(content);
+        VBox.setVgrow(content, Priority.ALWAYS);
+        dialog.getDialogPane().setContent(vBox);
 
-    private static void setListContent(Dialog<ButtonType> dialog, List<String> messages) {
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10));
-        ListView<String> listView = new ListView<>(FXCollections.observableArrayList(messages));
-        grid.add(listView, 0, 0);
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
     }
 
     private static void setIcon(Dialog dialog, String iconPath) {
