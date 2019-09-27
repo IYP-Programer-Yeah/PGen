@@ -6,7 +6,8 @@ A **simple to use** graphical LL(1) parser generator
 ## Getting Started
 
 For run this project on your own local machine or server you should install java and maven.
-You can download jar which is released and use it without compiling it with maven
+
+This project uses Java, hence to run it, you machine should be Java enabled. To compile this project you are going to need maven, however, if you don't want to compile from source, there are releases you can use.
 
 ### Prerequisites
 
