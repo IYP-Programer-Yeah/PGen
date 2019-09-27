@@ -27,10 +27,14 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class MainController {
     @FXML
@@ -163,6 +167,30 @@ public class MainController {
         }
     }
 
+    public void exportFullParser(ActionEvent actionEvent) {
+        renumber(null);
+        File directorySelected = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
+        try {
+            if (directorySelected != null) {
+                InputStream parserSource = ResourceUtility.getResourceAsStream("parser/Parser.code");
+                InputStream lexicalSource = ResourceUtility.getResourceAsStream("parser/Lexical.code");
+                InputStream codeGeneratorSource = ResourceUtility.getResourceAsStream("parser/CodeGenerator.code");
+                Path destination = Paths.get(directorySelected.getPath());
+
+                LLParserGenerator parser = new LLParserGenerator(graphs);
+                parser.buildTable(new File(destination + "/table.npt"));
+                Files.copy(parserSource, destination.resolve("Parser.java"), REPLACE_EXISTING);
+                Files.copy(lexicalSource, destination.resolve("Lexical.java"), REPLACE_EXISTING);
+                Files.copy(codeGeneratorSource, destination.resolve("CodeGenerator.java"), REPLACE_EXISTING);
+
+                DialogUtility.showSuccessDialog("Parser generated successfully");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
+        } catch (IOException e) {
+            DialogUtility.showErrorDialog(e.getMessage());
+        }
+    }
 
     public void checkGraphs(ActionEvent actionEvent) {
         renumber(null);
