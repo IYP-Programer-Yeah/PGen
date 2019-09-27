@@ -1,5 +1,6 @@
 package ir.ac.sbu.controller;
 
+import ir.ac.sbu.utility.DialogUtility;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,8 +34,12 @@ public class EdgePropertiesController {
     }
 
     public void apply(ActionEvent actionEvent) {
-        Stage stage = (Stage) applyBtn.getScene().getWindow();
-        CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge, tokenText.getText(), funcText.getText(), graphChk.isSelected(), globalChk.isSelected()));
-        stage.close();
+        if (tokenText.getText().trim().isEmpty()) {
+            DialogUtility.showErrorDialog("Token can not be empty");
+        } else {
+            Stage stage = (Stage) applyBtn.getScene().getWindow();
+            CommandManager.getInstance().applyCommand(new ChangeEdgeCmd(edge, tokenText.getText(), funcText.getText(), graphChk.isSelected(), globalChk.isSelected()));
+            stage.close();
+        }
     }
 }

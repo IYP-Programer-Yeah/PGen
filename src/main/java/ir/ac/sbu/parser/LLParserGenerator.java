@@ -1,6 +1,8 @@
 package ir.ac.sbu.parser;
 
 import ir.ac.sbu.exception.TableException;
+import ir.ac.sbu.parser.builder.Action;
+import ir.ac.sbu.parser.builder.LLCell;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.wagu.Block;
 import ir.ac.sbu.wagu.Board;
@@ -18,7 +20,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class LLParser {
+public class LLParserGenerator {
     private List<GraphModel> graphs;
     private Set<String> tokens;
     private Set<String> variables;
@@ -30,7 +32,7 @@ public class LLParser {
     private Map<String, Integer> tokenAsInt;
     private List<String> tokensSortedById;
 
-    public LLParser(List<GraphModel> graphs) throws TableException {
+    public LLParserGenerator(List<GraphModel> graphs) throws TableException {
         this.graphs = graphs;
         tokens = graphs.stream()
                 .flatMap(graph -> graph.getEdges().stream())
