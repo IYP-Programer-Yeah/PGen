@@ -31,7 +31,6 @@ sudo apt install maven
 
 You can compile the code via the following command.
 
-You can compile PGen with below command:
 ```
 mvn package
 ```
