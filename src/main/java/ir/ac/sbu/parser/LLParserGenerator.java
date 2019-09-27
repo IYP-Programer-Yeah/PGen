@@ -133,9 +133,6 @@ public class LLParserGenerator {
         Map<Integer, Set<String>> totalFirstSets = getTotalFirstSets();
         Map<String, Set<String>> totalFollowSets = getTotalFollowSets(totalFirstSets);
 
-        System.out.println(totalFirstSets);
-        System.out.println(totalFollowSets);
-
         int totalTokensVariables = tokenAsInt.size();
         LLCell[][] table = new LLCell[allNodes.size()][totalTokensVariables];
         for (int i = 0; i < allNodes.size(); i++) {

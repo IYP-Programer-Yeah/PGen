@@ -28,6 +28,7 @@
             <MenuItem fx:id="exportTableMenuItem" mnemonicParsing="false" text="Build Pretty Table"/>
             <MenuItem fx:id="exportCSVTableMenuItem" mnemonicParsing="false" text="Build CSV Table"/>
             <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export Functions"/>
+            <MenuItem fx:id="exportLLParserMenuItem" onAction="#exportFullParser" mnemonicParsing="false" text="Export Full Parser"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
             <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#aboutMenu" text="About"/>
