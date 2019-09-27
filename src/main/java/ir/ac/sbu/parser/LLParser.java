@@ -107,9 +107,14 @@ public class LLParser {
         List<String> messages = new ArrayList<>();
         Set<String> extractExpectedGraphs = graphs.stream().flatMap(graph -> graph.getEdges().stream()).
                 filter(EdgeModel::isGraph).map(EdgeModel::getToken).collect(Collectors.toSet());
-        Set<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
+        List<String> givenGraphs = graphs.stream().map(GraphModel::getName).collect(Collectors.toList());
         extractExpectedGraphs.removeAll(givenGraphs);
-        extractExpectedGraphs.forEach(s -> messages.add(String.format("Graph %s doesn't Exist", s)));
+        extractExpectedGraphs.forEach(s -> messages.add(String.format("Graph %s doesn't exist", s)));
+        givenGraphs.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .filter(e -> e.getValue() > 1L)
+                .map(Map.Entry::getKey)
+                .forEach(s -> messages.add(String.format("Duplicate graph %s exist", s)));
 
         List<GraphModel> graphWithNoFinalNode = graphs.stream().
                 filter(graph -> graph.getNodes().stream().noneMatch(NodeModel::isFinalNode)).collect(Collectors.toList());
