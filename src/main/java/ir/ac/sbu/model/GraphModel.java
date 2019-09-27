@@ -1,11 +1,10 @@
 package ir.ac.sbu.model;
 
+import ir.ac.sbu.utility.GenerateUID;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GraphModel {
@@ -19,6 +18,37 @@ public class GraphModel {
     public GraphModel(String name) {
         this.name = new SimpleStringProperty(name);
         nodes = new ArrayList<>();
+    }
+
+    public GraphModel createCopy(String newName) {
+        GraphModel graphModel = new GraphModel(newName);
+        Map<Integer, NodeModel> mapBetweenLastAndNewId = new HashMap<>();
+        graphModel.nodes = new ArrayList<>();
+        for (NodeModel node : nodes) {
+            NodeModel nodeModel = new NodeModel(node.getX(), node.getY(), graphModel, GenerateUID.createID());
+            mapBetweenLastAndNewId.put(node.getId(), nodeModel);
+            nodeModel.setFinalNode(node.isFinalNode());
+            nodeModel.setStartNode(node.isStartNode());
+            if (node.isStartNode()) {
+                graphModel.start = node;
+            }
+            graphModel.nodes.add(nodeModel);
+        }
+
+        for (NodeModel node : nodes) {
+            for (EdgeModel edgeModel : node.getAdjacent()) {
+                NodeModel startNode = mapBetweenLastAndNewId.get(edgeModel.getStart().getId());
+                EdgeModel newEdgeModel = new EdgeModel(startNode, mapBetweenLastAndNewId.get(edgeModel.getEnd().getId()));
+                newEdgeModel.setToken(edgeModel.getToken());
+                newEdgeModel.setFunction(edgeModel.getFunction());
+                newEdgeModel.setAnchorX(edgeModel.getAnchorX());
+                newEdgeModel.setAnchorY(edgeModel.getAnchorY());
+                newEdgeModel.setGraph(edgeModel.isGraph());
+                newEdgeModel.setGlobal(edgeModel.isGlobal());
+                startNode.getAdjacent().add(newEdgeModel);
+            }
+        }
+        return graphModel;
     }
 
     public String getName() {

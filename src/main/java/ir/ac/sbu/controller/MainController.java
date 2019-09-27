@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MainController {
@@ -92,13 +93,22 @@ public class MainController {
             ContextMenu contextMenu = new ContextMenu();
             MenuItem deleteBtn = new MenuItem("Delete");
             MenuItem renameBtn = new MenuItem("Rename");
+            MenuItem duplicateBtn = new MenuItem("Duplicate");
 
             deleteBtn.setOnAction(event -> cell.getListView().getItems().remove(cell.getItem()));
             renameBtn.setOnAction(event ->
-                    DialogUtility.showInputDialog(cell.getItem().getName(), "Rename graph")
+                    DialogUtility.showInputDialog(cell.getItem().getName(), "Rename Graph")
                             .ifPresent(s -> cell.getItem().setName(s)));
+            duplicateBtn.setOnAction(event -> {
+                Optional<String> result = DialogUtility.showInputDialog(cell.getItem().getName(), "New Graph");
+                if (result.isPresent()) {
+                    GraphModel currentGraph = cell.getItem();
+                    GraphModel duplicateGraph = currentGraph.createCopy(result.get());
+                    graphs.add(duplicateGraph);
+                }
+            });
 
-            contextMenu.getItems().addAll(deleteBtn, renameBtn);
+            contextMenu.getItems().addAll(deleteBtn, renameBtn, duplicateBtn);
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
