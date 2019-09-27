@@ -11,24 +11,36 @@ This project uses Java, hence to run it, you machine should be Java enabled. To 
 
 ### Prerequisites
 
-For installing dependencies for this project do this instructions.
+Following prerequisites are required, depending on your usage.
 
-Install java
+#### Java
+
+To execute this project you are going to need Java JDK, which you can install via the following command, if you are on a Linux machine.
 ```
 sudo apt install openjdk-8-jdk
 ```
 
-Install maven
+#### Maven
+
+You are going to need Maven only if you are compiling from source. You can install Maven using the following command if you are on a Linux machine.
 ```
 sudo apt install maven
 ```
-### Installing
+
+### Compilation
+
+You can compile the code via the following command.
 
 You can compile PGen with below command:
 ```
 mvn package
 ```
-After that, You will see this: `target/PGen-*.*-jar-with-dependencies.jar`. Run that with bellow command
+The result of compilation is a `.jar` file, that you can find in the `target` director. The file is going to be named `PGen-*.*-jar-with-dependencies.jar` where the `*.*` is going to be the version of the binary.
+
+### Execution
+
+You can run the executable with the following command.
+
 ```
 java -jar target/PGen-*.*-jar-with-dependencies.jar
 ```
@@ -45,6 +57,7 @@ Right Click on edge's name for deleting or changing parameteres.
 
 ## Authors
 * **Poya Payandeh** - [github](https://github.com/pouyapayandeh)
+* **Hosein Ghahremanzadeh** - [github](https://github.com/IYP-Programer-Yeah)
 * **Ali Shamakhi** - [github](https://github.com/ali-shamakhi)
 * **Amin Borjian** - [github](https://github.com/Borjianamin98)
 
