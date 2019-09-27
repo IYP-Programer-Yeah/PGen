@@ -4,7 +4,7 @@ import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.exception.TableException;
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
-import ir.ac.sbu.parser.LLParser;
+import ir.ac.sbu.parser.LLParserGenerator;
 import ir.ac.sbu.service.ExportService;
 import ir.ac.sbu.service.SaveLoadService;
 import ir.ac.sbu.utility.DialogUtility;
@@ -96,15 +96,26 @@ public class MainController {
             MenuItem duplicateBtn = new MenuItem("Duplicate");
 
             deleteBtn.setOnAction(event -> cell.getListView().getItems().remove(cell.getItem()));
-            renameBtn.setOnAction(event ->
-                    DialogUtility.showInputDialog(cell.getItem().getName(), "Rename Graph")
-                            .ifPresent(s -> cell.getItem().setName(s)));
+            renameBtn.setOnAction(event -> {
+                Optional<String> newValue = DialogUtility.showInputDialog(cell.getItem().getName(), "Rename Graph");
+                if (newValue.isPresent()) {
+                    if (!newValue.get().trim().isEmpty()) {
+                        cell.getItem().setName(newValue.get());
+                    } else {
+                        DialogUtility.showErrorDialog("Name of graph can not be empty");
+                    }
+                }
+            });
             duplicateBtn.setOnAction(event -> {
                 Optional<String> result = DialogUtility.showInputDialog(cell.getItem().getName(), "New Graph");
                 if (result.isPresent()) {
-                    GraphModel currentGraph = cell.getItem();
-                    GraphModel duplicateGraph = currentGraph.createCopy(result.get());
-                    graphs.add(duplicateGraph);
+                    if (!result.get().trim().isEmpty()) {
+                        GraphModel currentGraph = cell.getItem();
+                        GraphModel duplicateGraph = currentGraph.createCopy(result.get());
+                        graphs.add(duplicateGraph);
+                    } else {
+                        DialogUtility.showErrorDialog("Name of graph can not be empty");
+                    }
                 }
             });
 
@@ -143,7 +154,7 @@ public class MainController {
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Table to", "*.npt");
         try {
             if (selectedFile != null) {
-                LLParser parser = new LLParser(graphs);
+                LLParserGenerator parser = new LLParserGenerator(graphs);
                 parser.buildTable(selectedFile);
                 DialogUtility.showSuccessDialog("Successful!");
             }
@@ -156,7 +167,7 @@ public class MainController {
     public void checkGraphs(ActionEvent actionEvent) {
         renumber(null);
         try {
-            new LLParser(graphs);
+            new LLParserGenerator(graphs);
             DialogUtility.showSuccessDialog("There is no problem!");
         } catch (TableException e) {
             DialogUtility.showErrorDialog(e.getMessages());
@@ -168,7 +179,7 @@ public class MainController {
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");
         try {
             if (selectedFile != null) {
-                LLParser parser = new LLParser(graphs);
+                LLParserGenerator parser = new LLParserGenerator(graphs);
                 parser.buildPrettyTable(selectedFile);
                 DialogUtility.showSuccessDialog("Successful!");
             }
@@ -182,7 +193,7 @@ public class MainController {
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save CSV Table to", "*.csv");
         try {
             if (selectedFile != null) {
-                LLParser parser = new LLParser(graphs);
+                LLParserGenerator parser = new LLParserGenerator(graphs);
                 parser.buildCSVTable(selectedFile);
                 DialogUtility.showSuccessDialog("Successful!");
             }

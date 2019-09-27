@@ -1,8 +1,4 @@
-package ir.ac.sbu.parser;
-
-enum Action {
-    ERROR, SHIFT, GOTO, PUSH_GOTO, REDUCE, ACCEPT
-}
+package ir.ac.sbu.parser.builder;
 
 public class LLCell {
     private Action action;
