@@ -1,10 +1,11 @@
 package ir.ac.sbu.controller;
 
 import ir.ac.sbu.command.CommandManager;
+import ir.ac.sbu.exception.TableException;
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
+import ir.ac.sbu.parser.LLParser;
 import ir.ac.sbu.service.ExportService;
-import ir.ac.sbu.service.LLParser;
 import ir.ac.sbu.service.SaveLoadService;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.utility.GenerateUID;
@@ -129,36 +130,43 @@ public class MainController {
 
     private void build(ActionEvent actionEvent) {
         renumber(null);
-        LLParser parser = new LLParser();
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Table to", "*.npt");
-        if (selectedFile != null) {
-            ShowMessages(parser.buildTable(graphs, selectedFile));
+        try {
+            if (selectedFile != null) {
+                LLParser parser = new LLParser(graphs);
+                parser.buildTable(selectedFile);
+                DialogUtility.showSuccessDialog("Successful!");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
         }
     }
 
     private void prettyTable(ActionEvent actionEvent) {
         renumber(null);
-        LLParser parser = new LLParser();
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");
-        if (selectedFile != null) {
-            ShowMessages(parser.buildPrettyTable(graphs, selectedFile));
+        try {
+            if (selectedFile != null) {
+                LLParser parser = new LLParser(graphs);
+                parser.buildPrettyTable(selectedFile);
+                DialogUtility.showSuccessDialog("Successful!");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
         }
     }
 
     private void csvTable(ActionEvent actionEvent) {
         renumber(null);
-        LLParser parser = new LLParser();
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save CSV Table to", "*.csv");
-        if (selectedFile != null) {
-            ShowMessages(parser.buildCSVTable(graphs, selectedFile));
-        }
-    }
-
-    private void ShowMessages(List<String> messages) {
-        if (messages.isEmpty()) {
-            DialogUtility.showSuccessDialog("Successful!");
-        } else {
-            DialogUtility.showErrorDialog(messages);
+        try {
+            if (selectedFile != null) {
+                LLParser parser = new LLParser(graphs);
+                parser.buildCSVTable(selectedFile);
+                DialogUtility.showSuccessDialog("Successful!");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
         }
     }
 
