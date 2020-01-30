@@ -1,12 +1,16 @@
 package ir.ac.sbu.parser;
 
+import ir.ac.sbu.command.ChangeEdgeCmd;
+import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.exception.TableException;
 import ir.ac.sbu.parser.builder.Action;
 import ir.ac.sbu.parser.builder.LLCell;
+import ir.ac.sbu.utility.CheckUtility;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.wagu.Block;
 import ir.ac.sbu.wagu.Board;
 import ir.ac.sbu.wagu.Table;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.GraphModel;
@@ -51,7 +55,7 @@ public class LLParserGenerator {
         checkGraphs(graphs);
         checkTokens();
 
-        variableGraph = graphs.stream().collect(Collectors.toMap(GraphModel::getName, Function.identity(), (o, o2) -> o));
+        variableGraph = graphs.stream().collect(Collectors.toMap(GraphModel::getName, Function.identity(), (o, v) -> o));
         allNodes = graphs.stream().flatMap(graphModel -> graphModel.getNodes().stream())
                 .collect(Collectors.toList());
         allEdges = graphs.stream()
@@ -68,11 +72,25 @@ public class LLParserGenerator {
     }
 
     private void checkEdges() throws TableException {
+        List<String> messages = new ArrayList<>();
+
+        for (EdgeModel edge : allEdges) {
+            try {
+                CheckUtility.checkFunctionName(edge.getFunction());
+            } catch (IllegalArgumentException e) {
+                messages.add(e.getMessage());
+            }
+        }
+
         if (allEdges.stream()
                 .filter(EdgeModel::isGraph)
                 .map(EdgeModel::getToken)
                 .anyMatch(token -> token.equals("MAIN"))) {
-            throw new TableException(Collections.singletonList("Graph MAIN should not used in graphs"));
+            messages.add("Graph MAIN should not used in graphs.");
+        }
+
+        if (!messages.isEmpty()) {
+            throw new TableException(messages);
         }
     }
 
@@ -82,18 +100,25 @@ public class LLParserGenerator {
         tokenAsInt.put("$", 0);
         int tokenUID = 1;
         for (String token : tokens) {
-            if (token.startsWith("$")) {
-                messages.add("All string starting with $ are predefined tokens");
+            try {
+                CheckUtility.checkTokenName(token);
+                tokenAsInt.put(token, tokenUID);
+                tokenUID++;
+            } catch (IllegalArgumentException e) {
+                messages.add(e.getMessage());
             }
-            tokenAsInt.put(token, tokenUID);
-            tokenUID++;
         }
 
         for (String variable : variables) {
-            if (tokenAsInt.put(variable, tokenUID) != null) {
-                messages.add(String.format("%s Should be either a token or a graph", variable));
+            try {
+                CheckUtility.checkGraphName(variable);
+                if (tokenAsInt.put(variable, tokenUID) != null) {
+                    messages.add(String.format("%s Should be either a token or a graph.", variable));
+                }
+                tokenUID++;
+            } catch (IllegalArgumentException e) {
+                messages.add(e.getMessage());
             }
-            tokenUID++;
         }
 
         tokensSortedById = tokenAsInt.keySet().stream()
@@ -119,10 +144,15 @@ public class LLParserGenerator {
                 .forEach(s -> messages.add(String.format("Duplicate graph %s exist", s)));
 
         List<GraphModel> graphWithNoFinalNode = graphs.stream().
-                filter(graph -> graph.getNodes().stream().noneMatch(NodeModel::isFinalNode)).collect(Collectors.toList());
-        graphWithNoFinalNode.forEach(graph -> messages.add(String.format("Graph %s doesn't have final node", graph.getName())));
-        List<GraphModel> graphWithNoStartNode = graphs.stream().filter(graph -> graph.getStart() == null).collect(Collectors.toList());
-        graphWithNoStartNode.forEach(graph -> messages.add(String.format("Graph %s doesn't have start node", graph.getName())));
+                filter(graph -> graph.getNodes().stream().noneMatch(NodeModel::isFinalNode))
+                .collect(Collectors.toList());
+        graphWithNoFinalNode.forEach(graph ->
+                messages.add(String.format("Graph %s doesn't have final node", graph.getName())));
+        List<GraphModel> graphWithNoStartNode = graphs.stream()
+                .filter(graph -> graph.getStart() == null)
+                .collect(Collectors.toList());
+        graphWithNoStartNode.forEach(graph ->
+                messages.add(String.format("Graph %s doesn't have start node", graph.getName())));
 
         if (!messages.isEmpty()) {
             throw new TableException(messages);
@@ -213,11 +243,10 @@ public class LLParserGenerator {
             writer.println(allNodes.size() + " " + table[0].length);
             writer.println(startNode);
 
-            writer.println(String.join(" ", tokensSortedById));
+            writer.println(String.join(CheckUtility.DELIMITER, tokensSortedById));
             for (LLCell[] cellOfNode : table) {
-                for (LLCell cell : cellOfNode) {
-                    writer.print(cell + " ");
-                }
+                writer.print(Arrays.stream(cellOfNode).map(LLCell::toString)
+                        .collect(Collectors.joining(CheckUtility.DELIMITER)));
                 writer.println();
             }
             writer.println();

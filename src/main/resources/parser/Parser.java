@@ -2,6 +2,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 enum Action {
     ERROR, SHIFT, GOTO, PUSH_GOTO, REDUCE, ACCEPT
@@ -10,12 +11,12 @@ enum Action {
 class LLCell {
     private Action action;
     private int target;
-    private String function;
+    private List<String> functions;
 
-    public LLCell(Action action, int target, String function) {
+    public LLCell(Action action, int target, List<String> functions) {
         this.action = action;
         this.target = target;
-        this.function = function;
+        this.functions = functions;
     }
 
     public Action getAction() {
@@ -26,15 +27,18 @@ class LLCell {
         return target;
     }
 
-    public String getFunction() {
-        return function;
+    public List<String> getFunction() {
+        return functions;
     }
 }
 
 
 public class Parser {
+    public static String TABLE_DELIMITER = ",";
+
     private Lexical lexical;
     private CodeGenerator codeGenerator;
+    private boolean debugMode;
 
     private String[] symbols;
     private LLCell[][] parseTable;
@@ -42,6 +46,11 @@ public class Parser {
     private Deque<Integer> parseStack = new ArrayDeque<>();
 
     private List<String> recoveryState;
+
+    public Parser(Lexical lexical, CodeGenerator codeGenerator, String nptPath, boolean debugMode) {
+        this(lexical, codeGenerator, nptPath);
+        this.debugMode = debugMode;
+    }
 
     public Parser(Lexical lexical, CodeGenerator codeGenerator, String nptPath) {
         this.lexical = lexical;
@@ -55,28 +64,40 @@ public class Parser {
         try {
             Scanner in = new Scanner(new FileInputStream(nptPath));
             String[] tmpArr = in.nextLine().trim().split(" ");
-            int rowSize = Integer.valueOf(tmpArr[0]);
-            int colSize = Integer.valueOf(tmpArr[1]);
-            startNode = Integer.valueOf(in.nextLine());
-            symbols = in.nextLine().trim().split(" ");
+            int rowSize = Integer.parseInt(tmpArr[0]);
+            int colSize = Integer.parseInt(tmpArr[1]);
+            startNode = Integer.parseInt(in.nextLine());
+            symbols = in.nextLine().trim().split(TABLE_DELIMITER);
 
             parseTable = new LLCell[rowSize][colSize];
             for (int i = 0; i < rowSize; i++) {
-                tmpArr = in.nextLine().trim().split(" ");
-                if (tmpArr.length != colSize * 3) {
-                    throw new RuntimeException("Invalid .npt file");
+                tmpArr = in.nextLine().trim().split(TABLE_DELIMITER);
+                if (tmpArr.length != colSize) {
+                    throw new RuntimeException("Invalid .npt file: File contains rows with length" +
+                            " bigger than column size.");
                 }
 
                 for (int j = 0; j < colSize; j++) {
-                    parseTable[i][j] = new LLCell(Action.values()[Integer.parseInt((tmpArr[j * 3]))],
-                            Integer.parseInt(tmpArr[j * 3 + 1]),
-                            tmpArr[j * 3 + 2]);
+                    String[] cellParts = tmpArr[j].split(" ");
+                    if (cellParts.length != 3) {
+                        throw new RuntimeException("Invalid .npt file: Parser cells must have extactly 3 values.");
+                    }
+                    Action action = Action.values()[Integer.parseInt(cellParts[0])];
+                    int target = Integer.parseInt(cellParts[1]);
+                    List<String> allFunctions;
+                    if (cellParts[2].equals("NoSem")) {
+                        allFunctions = new ArrayList<>();
+                    } else {
+                        allFunctions = Arrays.stream(cellParts[2].substring(1).split("[;]"))
+                                .filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                    }
+                    parseTable[i][j] = new LLCell(action, target, allFunctions);
                 }
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Invalid .npt file");
+            throw new RuntimeException("Invalid .npt file.");
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Unable to load .npt file", e);
+            throw new RuntimeException("Unable to load .npt file.", e);
         }
     }
 
@@ -87,10 +108,19 @@ public class Parser {
         while (!accepted) {
             String tokenText = symbols[tokenID];
             LLCell cell = parseTable[currentNode][tokenID];
+            if (debugMode) {
+                System.out.println("Current token: text='" + symbols[tokenID] + "' id=" + tokenID);
+                System.out.println("Current node: " + currentNode);
+                System.out.println("Current cell of parser table: " +
+                        "target-node=" + cell.getTarget() +
+                        " action=" + cell.getAction() +
+                        " function=" + cell.getFunction());
+                System.out.println(String.join("", Collections.nCopies(50, "-")));
+            }
             switch (cell.getAction()) {
                 case ERROR:
                     updateRecoveryState(currentNode, tokenText);
-                    generateError("Unable to parse input");
+                    generateError("Unable to parse input.");
                 case SHIFT:
                     doSemantics(cell.getFunction());
                     tokenID = nextTokenID();
@@ -125,8 +155,10 @@ public class Parser {
     }
 
     private void generateError(String message) {
+        System.out.flush();
+        System.out.println("Error happened while parsing ...");
         for (String state : recoveryState) {
-            System.err.println(state);
+            System.out.println(state);
         }
         throw new RuntimeException(message);
     }
@@ -145,23 +177,19 @@ public class Parser {
     private int nextTokenID() {
         String token = lexical.nextToken();
         for (int i = 0; i < symbols.length; i++) {
-            if (symbols[i].equalsIgnoreCase(token)) {
+            if (symbols[i].equals(token)) {
                 return i;
             }
         }
         throw new RuntimeException("Undefined token: " + token);
     }
 
-    private void doSemantics(String semantics) {
-        if (semantics.equals("NoSem")) {
-            return;
+    private void doSemantics(List<String> functions) {
+        if (debugMode) {
+            System.out.println("Execute semantic codes: " + functions);
         }
-        semantics = semantics.substring(1);
-        String[] allFunctions = semantics.split("[;]");
-        for (String function : allFunctions) {
-            if (function.length() > 0) {
-                codeGenerator.doSemantic(function);
-            }
+        for (String function : functions) {
+            codeGenerator.doSemantic(function);
         }
     }
 }
