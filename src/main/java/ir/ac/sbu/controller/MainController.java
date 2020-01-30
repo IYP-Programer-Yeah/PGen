@@ -7,6 +7,7 @@ import ir.ac.sbu.model.NodeModel;
 import ir.ac.sbu.parser.LLParserGenerator;
 import ir.ac.sbu.service.ExportService;
 import ir.ac.sbu.service.SaveLoadService;
+import ir.ac.sbu.utility.CheckUtility;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.utility.GenerateUID;
 import ir.ac.sbu.utility.ResourceUtility;
@@ -103,22 +104,24 @@ public class MainController {
             renameBtn.setOnAction(event -> {
                 Optional<String> newValue = DialogUtility.showInputDialog(cell.getItem().getName(), "Rename Graph");
                 if (newValue.isPresent()) {
-                    if (!newValue.get().trim().isEmpty()) {
+                    try {
+                        CheckUtility.checkGraphName(newValue.get());
                         cell.getItem().setName(newValue.get());
-                    } else {
-                        DialogUtility.showErrorDialog("Name of graph can not be empty");
+                    } catch (IllegalArgumentException e) {
+                        DialogUtility.showErrorDialog(e.getMessage());
                     }
                 }
             });
             duplicateBtn.setOnAction(event -> {
                 Optional<String> result = DialogUtility.showInputDialog(cell.getItem().getName(), "New Graph");
                 if (result.isPresent()) {
-                    if (!result.get().trim().isEmpty()) {
+                    try {
+                        CheckUtility.checkGraphName(result.get());
                         GraphModel currentGraph = cell.getItem();
                         GraphModel duplicateGraph = currentGraph.createCopy(result.get());
                         graphs.add(duplicateGraph);
-                    } else {
-                        DialogUtility.showErrorDialog("Name of graph can not be empty");
+                    } catch (IllegalArgumentException e) {
+                        DialogUtility.showErrorDialog(e.getMessage());
                     }
                 }
             });
@@ -172,9 +175,9 @@ public class MainController {
         File directorySelected = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
         try {
             if (directorySelected != null) {
-                InputStream parserSource = ResourceUtility.getResourceAsStream("parser/Parser.code");
-                InputStream lexicalSource = ResourceUtility.getResourceAsStream("parser/Lexical.code");
-                InputStream codeGeneratorSource = ResourceUtility.getResourceAsStream("parser/CodeGenerator.code");
+                InputStream parserSource = ResourceUtility.getResourceAsStream("parser/Parser.java");
+                InputStream lexicalSource = ResourceUtility.getResourceAsStream("parser/Lexical.java");
+                InputStream codeGeneratorSource = ResourceUtility.getResourceAsStream("parser/CodeGenerator.java");
                 Path destination = Paths.get(directorySelected.getPath());
 
                 LLParserGenerator parser = new LLParserGenerator(graphs);
