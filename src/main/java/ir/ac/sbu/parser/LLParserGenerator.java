@@ -394,13 +394,15 @@ public class LLParserGenerator {
         calculate first set
         if there is an edge from N1 to N2 with token (or variable) C:
         first{N1} += first{C} + (first{N2} | if C is a variable and C is nullable)
+        if C is nullable and N1 == N2 (C is a loop), then first{N1} += first{C}
          */
         for (EdgeModel edgeModel : nodeModel.getAdjacent()) {
             if (edgeModel.isGraph()) {
                 Set<String> firstSetOfGraph = calculateFirstSet(firstSets, visited,
                         variableGraph.get(edgeModel.getToken()).getStart());
                 firstOfCurrentNode.addAll(firstSetOfGraph);
-                if (nullableVariables.contains(edgeModel.getToken())) {
+                if (nullableVariables.contains(edgeModel.getToken()) &&
+                        edgeModel.getEnd().getId() != nodeModel.getId()) {
                     Set<String> firstSetOfRestOfGraph = calculateFirstSet(firstSets, visited,
                             edgeModel.getEnd());
                     firstOfCurrentNode.addAll(firstSetOfRestOfGraph);
