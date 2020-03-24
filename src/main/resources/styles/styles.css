@@ -1,0 +1,9 @@
+* {
+    -fx-prompt-text-fill: #989391;
+    -fx-text-overrun: clip;
+}
+
+.label {
+    -fx-font-size: 14;
+    -jfx-focus-color: transparent;
+}

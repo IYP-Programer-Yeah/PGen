@@ -29,6 +29,13 @@ public class DialogUtility {
         return dialog.showAndWait();
     }
 
+    public static Optional<ButtonType> showConfirmationDialog(String title, String message) {
+        Dialog<ButtonType> dialog = CustomDialogWithLabel(title, "assets/dialog/Information.png",
+                ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+        setContent(dialog, new Label(message));
+        return dialog.showAndWait();
+    }
+
     public static File showSaveDialog(Window owner, String title, String... extensions) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
@@ -96,7 +103,7 @@ public class DialogUtility {
 
     }
 
-    private static void setIcon(Dialog dialog, String iconPath) {
+    private static void setIcon(Dialog<?> dialog, String iconPath) {
         // Set the icon
         dialog.setGraphic(null);
 

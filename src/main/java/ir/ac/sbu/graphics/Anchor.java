@@ -11,14 +11,10 @@ public class Anchor extends Circle {
     private Runnable externalMouse = () -> {
     };
 
-    Anchor(Color color, DoubleProperty x, DoubleProperty y, double r) {
+    Anchor(Color fillColor, DoubleProperty x, DoubleProperty y, double r) {
         super(x.get(), y.get(), r);
-        setFill(color.deriveColor(1, 1, 1, 1));
-        setStroke(color);
-        setStrokeWidth(2);
-        setStrokeType(StrokeType.OUTSIDE);
+        setFill(fillColor);
 
-        setStyle("-fx-background-color: crimson");
         x.bind(centerXProperty());
         y.bind(centerYProperty());
         enableDrag();
@@ -72,7 +68,7 @@ public class Anchor extends Circle {
     }
 
     // records relative x and y co-ordinates.
-    private class Delta {
+    private static class Delta {
         double x, y;
     }
 }

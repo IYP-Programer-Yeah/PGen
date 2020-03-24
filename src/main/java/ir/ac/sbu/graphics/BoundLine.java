@@ -3,12 +3,15 @@ package ir.ac.sbu.graphics;
 import ir.ac.sbu.utility.ResourceUtility;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
@@ -22,6 +25,12 @@ import ir.ac.sbu.model.EdgeModel;
 import java.io.IOException;
 
 public class BoundLine extends CubicCurve {
+    private static final Color strokeColor = Color.ORANGE;
+    private static final Color fillColor = Color.TRANSPARENT;
+    private static final Color anchorColor = Color.BLUE;
+    private static final Color graphTextFillColor = Color.RED;
+    private static final Color simpleTextFillColor = Color.BLACK;
+
     private Anchor anchor;
     private Text text;
     private EdgeModel edge;
@@ -32,10 +41,11 @@ public class BoundLine extends CubicCurve {
         startYProperty().bind(startY);
         endXProperty().bind(endX);
         endYProperty().bind(endY);
-        setStroke(Color.ORANGE);
-        setStrokeWidth(4);
+
+        setFill(fillColor);
+        setStroke(strokeColor);
+        setStrokeWidth(2);
         setStrokeLineCap(StrokeLineCap.ROUND);
-        setFill(Color.CORNSILK.deriveColor(0, 1.2, 1, 0));
     }
 
 
@@ -52,14 +62,18 @@ public class BoundLine extends CubicCurve {
         endXProperty().addListener(this::calCurve);
         endYProperty().addListener(this::calCurve);
 
-        anchor = new Anchor(Color.BLUE, edge.anchorXProperty(), edge.anchorYProperty(), 5);
-
+        anchor = new Anchor(anchorColor, edge.anchorXProperty(), edge.anchorYProperty(), 8);
         anchor.setExternalMouse(() -> {
             calCurve(null, 0, 0);
             calArrow(null, 0, 0);
         });
+
         this.edge = edge;
-        text = new Text(edge.getToken() + "/@" + edge.getFunction());
+        if (edge.getFunction().isEmpty()) {
+            text = new Text(edge.getToken());
+        } else {
+            text = new Text(edge.getToken() + " | " + edge.getFunction());
+        }
         text.xProperty().bind(edge.anchorXProperty().add(10));
         text.yProperty().bind(edge.anchorYProperty());
 
@@ -70,29 +84,25 @@ public class BoundLine extends CubicCurve {
         calCurve(null, 0, 0);
         calArrow(null, 0, 0);
 
-        if (edge.isGraph())
-            text.setFill(Color.RED);
-        else
-            text.setFill(Color.BLACK);
-
-        edge.graphProperty().addListener((observable, oldValue, newValue) ->{
-            if (newValue)
-                text.setFill(Color.RED);
-            else
-                text.setFill(Color.BLACK);
-        });
+        edge.graphProperty().addListener((observable, oldValue, newValue) -> setTextColor(newValue));
+        setTextColor(edge.isGraph());
 
         contextMenu.getItems().addAll(deleteBtn, propertiesBtn);
         propertiesBtn.setOnAction(event -> showPropertiesDialog());
-        deleteBtn.setOnAction(event -> {
-            CommandManager.getInstance().applyCommand(new DeleteEdgeCmd(edge));
-        });
-        text.setOnMousePressed(event ->
-        {
-            contextMenu.show(this, event.getScreenX(), event.getScreenY());
-            event.consume();
-        });
+        deleteBtn.setOnAction(event -> CommandManager.getInstance().applyCommand(new DeleteEdgeCmd(edge)));
+        anchor.setOnContextMenuRequested(event -> edgeContextMenu(event, contextMenu));
+        text.setOnContextMenuRequested(event -> edgeContextMenu(event, contextMenu));
+        anchor.setOnMouseReleased(Event::consume);
         text.setOnMouseReleased(Event::consume);
+    }
+
+    private void edgeContextMenu(ContextMenuEvent event, ContextMenu contextMenu) {
+        contextMenu.show(this, event.getScreenX(), event.getScreenY());
+        event.consume();
+    }
+
+    private void setTextColor(boolean isGraphEdge) {
+        text.setFill(isGraphEdge ? graphTextFillColor : simpleTextFillColor);
     }
 
     public Path getArrowEnd() {
@@ -100,7 +110,6 @@ public class BoundLine extends CubicCurve {
     }
 
     public void calArrow(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
         Point2D ori = eval(this, 0.9f);
         Point2D tan = evalDt(this, 0.9f).normalize().multiply(50);
 

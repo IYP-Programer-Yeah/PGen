@@ -21,58 +21,37 @@ import ir.ac.sbu.command.DeleteNodeCmd;
 import ir.ac.sbu.model.NodeModel;
 
 public class GraphNode extends StackPane {
+    private static final double radius = 15;
+    private static final Color defaultNodeFillColor = Color.AQUA;
+    private static final Color finalNodeFillColor = Color.RED;
+    private static final Color defaultNodeStrokeColor = Color.AQUA;
+    private static final Color startNodeStrokeColor = Color.BLUE;
+
     private Circle circle;
-    private NodeModel node;
-    private Color color = Color.AQUA;
+    private NodeModel nodeModel;
     private EventHandler<MouseEvent> onShiftClick;
     private double mouseX;
     private double mouseY;
     private ContextMenu contextMenu = new ContextMenu();
 
-    public GraphNode(NodeModel n) {
-        this.node = n;
-        double radius = 10;
-        circle = new Circle(n.getX(), n.getY(), radius);
+    public GraphNode(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
+        this.circle = new Circle(nodeModel.getX(), nodeModel.getY(), radius);
 
-        circle.setFill(color.deriveColor(1, 1, 1, 1));
-        circle.setStroke(color);
         circle.setStrokeWidth(3);
         circle.setStrokeType(StrokeType.OUTSIDE);
 
-        setLayoutX(n.getX() - radius);
-        setLayoutY(n.getY() - radius);
-        n.xProperty().bind(layoutXProperty().add(radius));
-        n.yProperty().bind(layoutYProperty().add(radius));
+        setLayoutX(nodeModel.getX() - radius);
+        setLayoutY(nodeModel.getY() - radius);
+        nodeModel.xProperty().bind(layoutXProperty().add(radius));
+        nodeModel.yProperty().bind(layoutYProperty().add(radius));
 
-        if (n.isFinalNode()) {
-            circle.setFill(Color.RED);
-        } else {
-            circle.setFill(color.deriveColor(1, 1, 1, 1));
-        }
-        if (n.getGraph() != null && n.getGraph().getStart() == n) {
-            circle.setStroke(Color.GREEN);
-        } else {
-            circle.setStroke(color);
-        }
+        nodeModel.finalNodeProperty().addListener((observable, oldValue, newValue) -> setFillColor(newValue));
+        nodeModel.startNodeProperty().addListener((observable, oldValue, newValue) -> setStrokeColor(newValue));
+        setStrokeColor(nodeModel.isStartNode());
+        setFillColor(nodeModel.isFinalNode());
 
-        n.finalNodeProperty().addListener((observable, oldValue, newValue) ->
-        {
-            if (newValue) {
-                circle.setFill(Color.RED);
-            } else {
-                circle.setFill(color.deriveColor(1, 1, 1, 1));
-            }
-        });
-
-        n.startNodeProperty().addListener((observable, oldValue, newValue) ->
-        {
-            if (newValue) {
-                circle.setStroke(Color.GREEN);
-            } else {
-                circle.setStroke(color);
-            }
-        });
-        Text text = new Text(String.valueOf(n.getId()));
+        Text text = new Text(String.valueOf(nodeModel.getId()));
         text.setBoundsType(TextBoundsType.VISUAL);
         getChildren().addAll(circle, text);
         setAlignment(Pos.CENTER);
@@ -81,8 +60,16 @@ public class GraphNode extends StackPane {
         setMouseTransparent(false);
     }
 
-    public NodeModel getNode() {
-        return node;
+    private void setStrokeColor(boolean isStartNode) {
+        circle.setStroke(isStartNode ? startNodeStrokeColor : defaultNodeStrokeColor);
+    }
+
+    private void setFillColor(boolean isFinalNode) {
+        circle.setFill(isFinalNode ? finalNodeFillColor : defaultNodeFillColor);
+    }
+
+    public NodeModel getNodeModel() {
+        return nodeModel;
     }
 
     public EventHandler<MouseEvent> getOnShiftClick() {
@@ -147,18 +134,18 @@ public class GraphNode extends StackPane {
 
         deleteBtn.setOnAction(this::delete);
         CheckMenuItem finalBtn = new CheckMenuItem("Final");
-        finalBtn.selectedProperty().set(node.isFinalNode());
-        node.finalNodeProperty().bind(finalBtn.selectedProperty());
+        finalBtn.selectedProperty().set(nodeModel.isFinalNode());
+        nodeModel.finalNodeProperty().bind(finalBtn.selectedProperty());
 
         CheckMenuItem startBtn = new CheckMenuItem("Start");
-        startBtn.selectedProperty().set(node.startNodeProperty().getValue());
-        startBtn.setOnAction(event1 -> node.getGraph().setStart(node));
+        startBtn.selectedProperty().set(nodeModel.startNodeProperty().getValue());
+        startBtn.setOnAction(event1 -> nodeModel.getGraph().setStart(nodeModel));
         contextMenu.getItems().clear();
         contextMenu.getItems().addAll(deleteBtn, finalBtn, startBtn);
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
     }
 
     private void delete(ActionEvent actionEvent) {
-        CommandManager.getInstance().applyCommand(new DeleteNodeCmd(node));
+        CommandManager.getInstance().applyCommand(new DeleteNodeCmd(nodeModel));
     }
 }

@@ -1,7 +1,6 @@
 package ir.ac.sbu.parser;
 
-import ir.ac.sbu.command.ChangeEdgeCmd;
-import ir.ac.sbu.command.CommandManager;
+import ir.ac.sbu.controller.MainController;
 import ir.ac.sbu.exception.TableException;
 import ir.ac.sbu.parser.builder.Action;
 import ir.ac.sbu.parser.builder.LLCell;
@@ -10,12 +9,10 @@ import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.wagu.Block;
 import ir.ac.sbu.wagu.Board;
 import ir.ac.sbu.wagu.Table;
-import javafx.stage.Stage;
 import javafx.util.Pair;
 import ir.ac.sbu.model.EdgeModel;
 import ir.ac.sbu.model.GraphModel;
 import ir.ac.sbu.model.NodeModel;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -85,8 +82,8 @@ public class LLParserGenerator {
         if (allEdges.stream()
                 .filter(EdgeModel::isGraph)
                 .map(EdgeModel::getToken)
-                .anyMatch(token -> token.equals("MAIN"))) {
-            messages.add("Graph MAIN should not used in graphs.");
+                .anyMatch(token -> token.equals(MainController.mainGraphName))) {
+            messages.add("Graph " + MainController.mainGraphName + " should not used in graphs.");
         }
 
         if (!messages.isEmpty()) {
@@ -172,12 +169,12 @@ public class LLParserGenerator {
         }
 
         List<String> messages = new ArrayList<>();
-        int startNode = variableGraph.get("MAIN").getStart().getId();
+        int startNode = variableGraph.get(MainController.mainGraphName).getStart().getId();
         for (GraphModel graphModel : graphs) {
             List<NodeModel> finalNodes = graphModel.getNodes().stream().filter(NodeModel::isFinalNode)
                     .collect(Collectors.toList());
             for (NodeModel finalNode : finalNodes) {
-                if (graphModel.getName().equals("MAIN")) {
+                if (graphModel.getName().equals(MainController.mainGraphName)) {
                     table[finalNode.getId()][0] = new LLCell(Action.ACCEPT, -1, "", "First"); // Set EOF as accept state
                 } else {
                     for (String follow : totalFollowSets.get(graphModel.getName())) {
@@ -193,37 +190,70 @@ public class LLParserGenerator {
                 int tokenID = tokenAsInt.get(edge.getToken());
                 if (edge.isGraph()) {
                     int variableStartNodeId = variableGraph.get(edge.getToken()).getStart().getId();
-                    table[nodeID][tokenID] = new LLCell(Action.GOTO, edge.getEnd().getId(), edge.getFunction(), "First");
+                    if (table[nodeID][tokenID].getAction() == Action.GOTO) {
+                        messages.add(String.format(
+                                "At node %s: It is impossible to use same graph \"%s\" more than once",
+                                nodeID, edge.getToken()));
+                    }
+                    table[nodeID][tokenID] = new LLCell(Action.GOTO, edge.getEnd().getId(),
+                            edge.getFunction(), edge.getToken());
 
                     Set<String> firstSet = totalFirstSets.get(variableStartNodeId);
                     for (String first : firstSet) {
                         int firstTokenId = tokenAsInt.get(first);
-                        if (table[nodeID][firstTokenId].getAction() == Action.PUSH_GOTO ||
-                                table[nodeID][firstTokenId].getAction() == Action.SHIFT) {
-                            messages.add(String.format("%s and %s set collision in node %d and token \"%s\"",
-                                    "First", table[nodeID][firstTokenId].getComeFrom(), nodeID, first));
+                        LLCell cell = table[nodeID][firstTokenId];
+                        if (cell.getAction() == Action.SHIFT) {
+                            messages.add(String.format(
+                                    "At node %s: It is impossible to move with token \"%s\" to node %s or go to the " +
+                                            "graph \"%s\" and moving with that token",
+                                    nodeID, first, cell.getHelperValue(), edge.getToken()));
+                        } else if (cell.getAction() == Action.PUSH_GOTO) {
+                            messages.add(String.format(
+                                    "At node %s: It is impossible to move with token \"%s\" to more than one graph" +
+                                            " (\"%s\" or \"%s\")",
+                                    nodeID, first, cell.getHelperValue(), edge.getToken()));
                         }
-                        table[nodeID][firstTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "", "First");
+                        table[nodeID][firstTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "",
+                                edge.getToken());
                     }
 
                     if (nullableVariables.contains(edge.getToken())) {
                         for (String follow : totalFollowSets.get(edge.getToken())) {
                             int followTokenId = tokenAsInt.get(follow);
-                            if (table[nodeID][followTokenId].getAction() == Action.PUSH_GOTO ||
-                                    table[nodeID][followTokenId].getAction() == Action.SHIFT) {
-                                messages.add(String.format("%s and %s set collision in node %d and token \"%s\"",
-                                        "Follow", table[nodeID][tokenID].getComeFrom(), nodeID, follow));
+                            LLCell cell = table[nodeID][followTokenId];
+                            if (cell.getAction() == Action.SHIFT) {
+                                messages.add(String.format(
+                                        "At node %s: It is possible to move to node %s with edge \"%s\" without " +
+                                                "consuming any token. It is impossible to move with token \"%s\" to " +
+                                                "node %s or move with token on node %s.",
+                                        nodeID, edge.getEnd().getId(), edge.getToken(), follow,
+                                        cell.getHelperValue(), edge.getEnd().getId()));
+                            } else if (cell.getAction() == Action.PUSH_GOTO) {
+                                messages.add(String.format(
+                                        "At node %s: It is possible to move to node %s with edge \"%s\" without " +
+                                                "consuming any token. It is impossible to move with token \"%s\" to " +
+                                                "graph %s or move with token on node %s.",
+                                        nodeID, edge.getEnd().getId(), edge.getToken(), follow,
+                                        cell.getHelperValue(), edge.getEnd().getId()));
                             }
-                            table[nodeID][followTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "", "Follow");
+                            table[nodeID][followTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "",
+                                    edge.getToken());
                         }
                     }
                 } else {
                     LLCell cell = table[nodeID][tokenID];
-                    if (cell.getAction() == Action.PUSH_GOTO || cell.getAction() == Action.SHIFT) {
-                        messages.add(String.format("%s and %s set collision in node %d and token \"%s\"",
-                                "First", table[nodeID][tokenID].getComeFrom(), nodeID, edge.getToken()));
+                    if (cell.getAction() == Action.PUSH_GOTO) {
+                        messages.add(String.format(
+                                "At node %s: It is impossible to move with token \"%s\" to node %s or go to the " +
+                                        "graph \"%s\" and moving with that token",
+                                nodeID, edge.getToken(), edge.getEnd().getId(), cell.getHelperValue()));
+                    } else if (cell.getAction() == Action.SHIFT) {
+                        messages.add(String.format(
+                                "At node %s: It is impossible to move with token \"%s\" to more than one node (%s and %s)",
+                                nodeID, edge.getToken(), cell.getTarget(), edge.getEnd().getId()));
                     }
-                    table[nodeID][tokenID] = new LLCell(Action.SHIFT, edge.getEnd().getId(), edge.getFunction(), "First");
+                    table[nodeID][tokenID] = new LLCell(Action.SHIFT, edge.getEnd().getId(), edge.getFunction(),
+                            String.valueOf(edge.getEnd().getId()));
                 }
             }
         }
@@ -422,7 +452,7 @@ public class LLParserGenerator {
             followSet.put(variable, new HashSet<>());
             followContain.put(variable, new HashSet<>());
         }
-        followSet.get("MAIN").add("$");
+        followSet.get(MainController.mainGraphName).add("$");
 
         /*
         calculate follow set with formula

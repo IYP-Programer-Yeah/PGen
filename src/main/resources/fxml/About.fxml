@@ -39,7 +39,7 @@
                     <HBox>
                         <children>
                             <Label text="PGen Version:"/>
-                            <Label text="2.0.0"/>
+                            <Label fx:id="versionLabel"/>
                         </children>
                     </HBox>
                 </children>
@@ -59,10 +59,6 @@
         <Label text="Professor: "/>
         <Label text="Ghassem Jaberipur"/>
     </HBox>
-    <VBox>
-        <Label text="See contribution:"/>
-        <Label text="https://github.com/IYP-Programer-Yeah/PGen/graphs/contributors"/>
-    </VBox>
     <Button mnemonicParsing="false" onAction="#close" text="OK">
         <VBox.margin>
             <Insets bottom="5.0" top="15.0"/>

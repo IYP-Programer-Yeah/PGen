@@ -1,7 +1,6 @@
 package ir.ac.sbu.command;
 
 import ir.ac.sbu.controller.RefreshableController;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -23,6 +22,11 @@ public class CommandManager {
 
     public static void init(RefreshableController controller) {
         instance = new CommandManager(controller);
+    }
+
+    public void clearCommandHistory() {
+        commands.clear();
+        redoCommands.clear();
     }
 
     public void applyCommand(Command command) {

@@ -5,23 +5,24 @@ public class LLCell {
     private int target;
     private String function;
     /**
-     * does it come from follow set or first set
+     * It will be only used for debugging.
+     * For SHIFT, it represents target id
+     * For GOTO or PUSH_GOTO, it represents graph name (variable name)
      */
-    private String comeFrom;
+    private String helperValue;
 
     public LLCell(Action action, int target, String function) {
         this.action = action;
         this.target = target;
         this.function = function;
-        if (function == null || function.equals(""))
+        if (function == null || function.equals("")) {
             this.function = "NoSem";
-        else
-            this.function = "@" + function;
+        }
     }
 
-    public LLCell(Action action, int target, String function, String comeFrom) {
+    public LLCell(Action action, int target, String function, String helperValue) {
         this(action, target, function);
-        this.comeFrom = comeFrom;
+        this.helperValue = helperValue;
     }
 
     @Override
@@ -33,8 +34,8 @@ public class LLCell {
         return action;
     }
 
-    public String getComeFrom() {
-        return comeFrom;
+    public String getHelperValue() {
+        return helperValue;
     }
 
     public int getTarget() {
