@@ -88,7 +88,7 @@ public class Parser {
                     if (cellParts[2].equals("NoSem")) {
                         allFunctions = new ArrayList<>();
                     } else {
-                        allFunctions = Arrays.stream(cellParts[2].substring(1).split("[;]"))
+                        allFunctions = Arrays.stream(cellParts[2].split("[;]"))
                                 .filter(s -> !s.isEmpty()).collect(Collectors.toList());
                     }
                     parseTable[i][j] = new LLCell(action, target, allFunctions);

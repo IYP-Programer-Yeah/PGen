@@ -14,26 +14,51 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <VBox fx:id="mainContainer" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ir.ac.sbu.controller.MainController">
     <MenuBar>
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save"/>
-            <MenuItem fx:id="loadMenuItem" mnemonicParsing="false" text="Load"/>
+            <MenuItem fx:id="fileNewMenuItem" text="New">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" shift="UP" code="N" shortcut="UP" meta="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem fx:id="fileOpenMenuItem" text="Open">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" shift="UP" code="O" shortcut="UP" meta="UP" />
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="fileSaveMenuItem" text="Save">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" shift="UP" code="S" shortcut="UP" meta="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem fx:id="fileSaveAsMenuItem" text="Save As">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="DOWN" shift="DOWN" code="S" shortcut="UP" meta="UP" />
+                </accelerator>
+            </MenuItem>
         </Menu>
         <Menu mnemonicParsing="false" text="Parser">
-            <MenuItem mnemonicParsing="false" onAction="#renumber" text="Renumber"/>
-            <MenuItem mnemonicParsing="false" onAction="#checkGraphs" text="Check Graphs"/>
-            <MenuItem fx:id="checkMenuItem" mnemonicParsing="false" text="Build Table"/>
-            <MenuItem fx:id="exportTableMenuItem" mnemonicParsing="false" text="Build Pretty Table"/>
-            <MenuItem fx:id="exportCSVTableMenuItem" mnemonicParsing="false" text="Build CSV Table"/>
-            <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export Functions"/>
-            <MenuItem fx:id="exportLLParserMenuItem" onAction="#exportFullParser" mnemonicParsing="false" text="Export Full Parser"/>
+            <MenuItem fx:id="parserRenumberMenuItem" mnemonicParsing="false" text="Renumber"/>
+            <MenuItem fx:id="parserCheckGraphMenuItem" mnemonicParsing="false" text="Check Graphs"/>
+            <MenuItem fx:id="parserBuildTableMenuItem" mnemonicParsing="false" text="Build Table"/>
+            <MenuItem fx:id="parserBuildPrettyTableMenuItem" mnemonicParsing="false" text="Build Pretty Table"/>
+            <MenuItem fx:id="parserBuildCSVTableMenuItem" mnemonicParsing="false" text="Build CSV Table"/>
+            <MenuItem fx:id="parserExportFunctionsMenuItem" mnemonicParsing="false" text="Export Functions"/>
+            <MenuItem fx:id="parserExportFullParserMenuItem" mnemonicParsing="false" text="Export Full Parser"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
-            <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#aboutMenu" text="About"/>
-            <MenuItem mnemonicParsing="false" onAction="#licenseMenu" text="License"/>
-            <MenuItem mnemonicParsing="false" onAction="#manualMenu" text="Manual"/>
+            <MenuItem fx:id="helpAboutMenuItem" mnemonicParsing="false" text="About">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" control="UP" shift="UP" code="F1" shortcut="UP" meta="UP" />
+                </accelerator>
+            </MenuItem>
+            <MenuItem fx:id="helpLicenseMenuItem" mnemonicParsing="false" text="License"/>
+            <MenuItem fx:id="helpManualMenuItem" mnemonicParsing="false" text="Manual"/>
         </Menu>
     </MenuBar>
     <ToolBar prefHeight="40.0" prefWidth="200.0">
@@ -49,9 +74,9 @@
         </Button>
     </ToolBar>
     <SplitPane dividerPositions="1.0" VBox.vgrow="ALWAYS">
-        <ListView fx:id="list" minWidth="100" maxWidth="200"/>
-        <ScrollPane fx:id="scrollPane">
-            <AnchorPane fx:id="pane" minHeight="0.0" minWidth="0.0" prefHeight="4000" prefWidth="4000"/>
+        <ListView fx:id="graphList" minWidth="100" maxWidth="200" style="-fx-background-color: white"/>
+        <ScrollPane>
+            <AnchorPane fx:id="pane" style="-fx-background-color: white" minHeight="0.0" minWidth="0.0" prefHeight="4000" prefWidth="4000"/>
         </ScrollPane>
     </SplitPane>
 </VBox>

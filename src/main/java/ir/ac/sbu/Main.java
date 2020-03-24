@@ -20,8 +20,14 @@ public class Main extends Application {
         primaryStage.setTitle("PGen");
         primaryStage.getIcons().add(new Image(ResourceUtility.getResourceAsStream("assets/Icon.png")));
 
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(createScene(root));
         primaryStage.setMaximized(true);
         primaryStage.show();
+    }
+
+    private static Scene createScene(Parent root) {
+        Scene scene = new Scene(root);
+        scene.getStylesheets().addAll(ResourceUtility.getResource("styles/styles.css").toString());
+        return scene;
     }
 }

@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,49 +41,68 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class MainController {
     @FXML
-    private ListView<GraphModel> list;
+    private ListView<GraphModel> graphList;
     @FXML
     private AnchorPane pane;
     @FXML
     private VBox mainContainer;
     @FXML
-    private MenuItem exportMenuItem;
+    private MenuItem fileNewMenuItem;
     @FXML
-    private MenuItem checkMenuItem;
+    private MenuItem fileOpenMenuItem;
     @FXML
-    private MenuItem saveMenuItem;
+    private MenuItem fileSaveMenuItem;
     @FXML
-    private MenuItem loadMenuItem;
+    private MenuItem fileSaveAsMenuItem;
     @FXML
-    private ScrollPane scrollPane;
+    private MenuItem parserRenumberMenuItem;
+    @FXML
+    private MenuItem parserCheckGraphMenuItem;
+    @FXML
+    private MenuItem parserBuildTableMenuItem;
+    @FXML
+    private MenuItem parserBuildPrettyTableMenuItem;
+    @FXML
+    private MenuItem parserBuildCSVTableMenuItem;
+    @FXML
+    private MenuItem parserExportFunctionsMenuItem;
+    @FXML
+    private MenuItem parserExportFullParserMenuItem;
     @FXML
     private Button addGraphBtn;
     @FXML
-    private MenuItem aboutMenuItem;
+    private MenuItem helpAboutMenuItem;
     @FXML
-    private MenuItem exportTableMenuItem;
+    private MenuItem helpLicenseMenuItem;
     @FXML
-    private MenuItem exportCSVTableMenuItem;
+    private MenuItem helpManualMenuItem;
 
+    public static final String mainGraphName = "MAIN";
+    private GraphModel mainGraphModel;
     private DrawPaneController drawPaneController;
-    private ObservableList<GraphModel> graphs = FXCollections.observableArrayList();
+    private ObservableList<GraphModel> graphs;
+    // Last file which is used for saving PGEN file will be stored to used for later save in applications
+    // It will be used when open a file too.
+    private File lastChosenFileForSave = null;
 
     @FXML
     private void initialize() {
-        drawPaneController = new DrawPaneController(pane);
+        this.graphs = FXCollections.observableArrayList();
+        this.drawPaneController = new DrawPaneController(pane);
         CommandManager.init(drawPaneController);
-        GraphModel graph = new GraphModel("MAIN");
-        drawPaneController.setGraph(graph);
-        list.setItems(graphs);
-        graphs.add(graph);
+        graphList.setItems(graphs);
 
-        list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        mainGraphModel = new GraphModel(mainGraphName);
+        drawPaneController.setGraph(mainGraphModel);
+        graphs.add(mainGraphModel);
+
+        graphList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
             drawPaneController.setGraph(newValue);
             drawPaneController.refresh();
         });
 
-        list.setCellFactory(param ->
+        graphList.setCellFactory(param ->
         {
             ListCell<GraphModel> cell = new ListCell<GraphModel>() {
                 @Override
@@ -96,12 +117,14 @@ public class MainController {
             };
 
             ContextMenu contextMenu = new ContextMenu();
-            MenuItem deleteBtn = new MenuItem("Delete");
-            MenuItem renameBtn = new MenuItem("Rename");
-            MenuItem duplicateBtn = new MenuItem("Duplicate");
+            MenuItem deleteButton = new MenuItem("Delete");
+            MenuItem renameButton = new MenuItem("Rename");
+            MenuItem duplicateButton = new MenuItem("Duplicate");
+            MenuItem moveUpButton = new MenuItem("Move Up");
+            MenuItem moveDownButton = new MenuItem("Move Down");
 
-            deleteBtn.setOnAction(event -> cell.getListView().getItems().remove(cell.getItem()));
-            renameBtn.setOnAction(event -> {
+            deleteButton.setOnAction(event -> cell.getListView().getItems().remove(cell.getItem()));
+            renameButton.setOnAction(event -> {
                 Optional<String> newValue = DialogUtility.showInputDialog(cell.getItem().getName(), "Rename Graph");
                 if (newValue.isPresent()) {
                     try {
@@ -112,7 +135,7 @@ public class MainController {
                     }
                 }
             });
-            duplicateBtn.setOnAction(event -> {
+            duplicateButton.setOnAction(event -> {
                 Optional<String> result = DialogUtility.showInputDialog(cell.getItem().getName(), "New Graph");
                 if (result.isPresent()) {
                     try {
@@ -125,8 +148,16 @@ public class MainController {
                     }
                 }
             });
+            moveUpButton.setOnAction(event -> {
+                int currentIndex = cell.getIndex();
+                Collections.swap(graphs, currentIndex, currentIndex - 1);
+            });
+            moveDownButton.setOnAction(event -> {
+                int currentIndex = cell.getIndex();
+                Collections.swap(graphs, currentIndex, currentIndex + 1);
+            });
 
-            contextMenu.getItems().addAll(deleteBtn, renameBtn, duplicateBtn);
+            contextMenu.getItems().addAll(deleteButton, renameButton, duplicateButton, moveUpButton, moveDownButton);
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
@@ -135,9 +166,17 @@ public class MainController {
                         cell.setText("");
                     }
                 } else {
-                    if (cell.getItem().getName().equals("MAIN")) {
-                        deleteBtn.setDisable(true);
-                        renameBtn.setDisable(true);
+                    if (cell.getItem().getName().equals(mainGraphName)) {
+                        deleteButton.setDisable(true);
+                        renameButton.setDisable(true);
+                        moveUpButton.setDisable(true);
+                        moveDownButton.setDisable(true);
+                    }
+                    // {@code mainGraphName} and element after it can not move to up
+                    if (cell.getIndex() <= 1) {
+                        moveUpButton.setDisable(true);
+                    } else if (cell.getIndex() == graphs.size() - 1) {
+                        moveDownButton.setDisable(true);
                     }
                     cell.setContextMenu(contextMenu);
                 }
@@ -147,17 +186,58 @@ public class MainController {
 
         mainContainer.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
         mainContainer.addEventHandler(KeyEvent.KEY_RELEASED, event -> drawPaneController.setFirstNode(null));
-        exportMenuItem.setOnAction(this::export);
-        saveMenuItem.setOnAction(this::save);
-        loadMenuItem.setOnAction(this::load);
-        checkMenuItem.setOnAction(this::build);
-        exportTableMenuItem.setOnAction(this::prettyTable);
-        exportCSVTableMenuItem.setOnAction(this::csvTable);
-        addGraphBtn.setOnAction(event -> graphs.addAll(new GraphModel("New Graph")));
+        fileNewMenuItem.setOnAction(this::fileNew);
+        fileOpenMenuItem.setOnAction(this::fileOpen);
+        fileSaveMenuItem.setOnAction(this::fileSave);
+        fileSaveAsMenuItem.setOnAction(this::fileSaveAs);
+        parserRenumberMenuItem.setOnAction(this::parserRenumber);
+        parserCheckGraphMenuItem.setOnAction(this::parserCheckGraphs);
+        parserBuildTableMenuItem.setOnAction(this::parserBuildTable);
+        parserBuildPrettyTableMenuItem.setOnAction(this::parserBuildPrettyTable);
+        parserBuildCSVTableMenuItem.setOnAction(this::parserBuildCsvTable);
+        parserExportFunctionsMenuItem.setOnAction(this::parserExportFunctions);
+        parserExportFullParserMenuItem.setOnAction(this::parserExportFullParser);
+        helpAboutMenuItem.setOnAction(this::helpAbout);
+        helpLicenseMenuItem.setOnAction(this::helpLicense);
+        helpManualMenuItem.setOnAction(this::helpManual);
+        addGraphBtn.setOnAction(this::addGraph);
     }
 
-    private void build(ActionEvent actionEvent) {
-        renumber(null);
+    public void addGraph(ActionEvent actionEvent) {
+        Optional<String> result = DialogUtility.showInputDialog("Name", "New Graph");
+        if (result.isPresent()) {
+            try {
+                CheckUtility.checkGraphName(result.get());
+                GraphModel newGraph = new GraphModel(result.get());
+                graphs.add(newGraph);
+            } catch (IllegalArgumentException e) {
+                DialogUtility.showErrorDialog(e.getMessage());
+            }
+        }
+    }
+
+    public void parserRenumber(ActionEvent actionEvent) {
+        List<NodeModel> nodes = graphList.getItems().stream().
+                flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
+        for (int i = 0; i < nodes.size(); i++) {
+            nodes.get(i).setId(i);
+        }
+        GenerateUID.setIdCounter(nodes.size());
+        drawPaneController.refresh();
+    }
+
+    public void parserCheckGraphs(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
+        try {
+            new LLParserGenerator(graphs);
+            DialogUtility.showSuccessDialog("There is no problem!");
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
+        }
+    }
+
+    private void parserBuildTable(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Table to", "*.npt");
         try {
             if (selectedFile != null) {
@@ -170,8 +250,46 @@ public class MainController {
         }
     }
 
-    public void exportFullParser(ActionEvent actionEvent) {
-        renumber(null);
+    private void parserBuildPrettyTable(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");
+        try {
+            if (selectedFile != null) {
+                LLParserGenerator parser = new LLParserGenerator(graphs);
+                parser.buildPrettyTable(selectedFile);
+                DialogUtility.showSuccessDialog("Successful!");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
+        }
+    }
+
+    private void parserBuildCsvTable(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
+        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save CSV Table to", "*.csv");
+        try {
+            if (selectedFile != null) {
+                LLParserGenerator parser = new LLParserGenerator(graphs);
+                parser.buildCSVTable(selectedFile);
+                DialogUtility.showSuccessDialog("Successful!");
+            }
+        } catch (TableException e) {
+            DialogUtility.showErrorDialog(e.getMessages());
+        }
+    }
+
+    private void parserExportFunctions(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
+        File selectedDirectory = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
+        if (selectedDirectory != null) {
+            ExportService exportService = new ExportService(selectedDirectory.toPath());
+            exportService.exportGraphs(graphs);
+            DialogUtility.showSuccessDialog("Exported successfully");
+        }
+    }
+
+    public void parserExportFullParser(ActionEvent actionEvent) {
+        parserRenumber(actionEvent);
         File directorySelected = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
         try {
             if (directorySelected != null) {
@@ -195,77 +313,71 @@ public class MainController {
         }
     }
 
-    public void checkGraphs(ActionEvent actionEvent) {
-        renumber(null);
-        try {
-            new LLParserGenerator(graphs);
-            DialogUtility.showSuccessDialog("There is no problem!");
-        } catch (TableException e) {
-            DialogUtility.showErrorDialog(e.getMessages());
+    private void fileNew(ActionEvent actionEvent) {
+        Optional<ButtonType> result = DialogUtility.showConfirmationDialog("PGEN", "Do you want to save changes to a file?");
+        if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) {
+            return;
         }
+        ButtonType selectedButton = result.get();
+        if (selectedButton.equals(ButtonType.YES)) {
+            fileSave(actionEvent);
+        }
+        lastChosenFileForSave = null;
+        graphs.clear();
+        CommandManager.getInstance().clearCommandHistory();
+        mainGraphModel = new GraphModel(mainGraphName);
+        graphs.add(mainGraphModel);
+        drawPaneController.setGraph(mainGraphModel);
+        drawPaneController.refresh();
     }
 
-    private void prettyTable(ActionEvent actionEvent) {
-        renumber(null);
-        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save Pretty Table to", "*.prt");
-        try {
-            if (selectedFile != null) {
-                LLParserGenerator parser = new LLParserGenerator(graphs);
-                parser.buildPrettyTable(selectedFile);
-                DialogUtility.showSuccessDialog("Successful!");
-            }
-        } catch (TableException e) {
-            DialogUtility.showErrorDialog(e.getMessages());
-        }
-    }
-
-    private void csvTable(ActionEvent actionEvent) {
-        renumber(null);
-        File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save CSV Table to", "*.csv");
-        try {
-            if (selectedFile != null) {
-                LLParserGenerator parser = new LLParserGenerator(graphs);
-                parser.buildCSVTable(selectedFile);
-                DialogUtility.showSuccessDialog("Successful!");
-            }
-        } catch (TableException e) {
-            DialogUtility.showErrorDialog(e.getMessages());
-        }
-    }
-
-    private void load(ActionEvent actionEvent) {
+    private void fileOpen(ActionEvent actionEvent) {
         File selectedFile = DialogUtility.showOpenDialog(pane.getScene().getWindow(), "*.pgs");
         if (selectedFile != null) {
             SaveLoadService exportService = new SaveLoadService(selectedFile);
-            exportService.load(list);
-            drawPaneController.setGraph(list.getItems().get(0));
+            exportService.load(graphList);
+            drawPaneController.setGraph(graphList.getItems().get(0));
             drawPaneController.refresh();
+            lastChosenFileForSave = selectedFile;
         }
     }
 
-    private void save(ActionEvent actionEvent) {
-        renumber(null);
+    private void fileSave(ActionEvent actionEvent) {
+        if (lastChosenFileForSave != null) {
+            saveGraphs(lastChosenFileForSave);
+        } else {
+            fileSaveAs(actionEvent);
+        }
+    }
+
+    private void fileSaveAs(ActionEvent actionEvent) {
         File selectedFile = DialogUtility.showSaveDialog(pane.getScene().getWindow(), "Save PGen File", "*.pgs");
         if (selectedFile != null) {
-            SaveLoadService exportService = new SaveLoadService(selectedFile);
-            exportService.save(graphs);
+            lastChosenFileForSave = selectedFile;
+            saveGraphs(lastChosenFileForSave);
         }
     }
 
-    private void export(ActionEvent actionEvent) {
-        File selectedDirectory = DialogUtility.showDirectoryDialog(pane.getScene().getWindow());
-        if (selectedDirectory != null) {
-            ExportService exportService = new ExportService(selectedDirectory.toPath());
-            exportService.exportGraphs(graphs);
-            DialogUtility.showSuccessDialog("Exported successfully");
-        }
+    private void saveGraphs(File file) {
+        parserRenumber(null);
+        SaveLoadService exportService = new SaveLoadService(file);
+        exportService.save(graphs);
+    }
+
+    public void helpAbout(ActionEvent actionEvent) {
+        showModal(ResourceUtility.getResource("fxml/About.fxml"), "About");
+    }
+
+    public void helpLicense(ActionEvent actionEvent) {
+        showModal(ResourceUtility.getResource("fxml/License.fxml"), "License");
+    }
+
+    public void helpManual(ActionEvent actionEvent) {
+        showModal(ResourceUtility.getResource("fxml/Help.fxml"), "Help");
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
         if (keyEvent.isControlDown()) {
-            if (keyEvent.getCode().equals(KeyCode.N)) {
-                list.getItems().addAll(new GraphModel("2"));
-            }
             if (keyEvent.getCode().equals(KeyCode.Z) && !keyEvent.isShiftDown()) {
                 CommandManager.getInstance().rollBack();
             }
@@ -275,18 +387,10 @@ public class MainController {
         }
     }
 
-    public void aboutMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/About.fxml"), "About");
-    }
-
-    public void licenseMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/License.fxml"), "License");
-    }
-
     private void showModal(URL resource, String title) {
         final FXMLLoader loader = new FXMLLoader(resource);
 
-        Parent root = null;
+        Parent root;
         try {
             root = loader.load();
             Scene scene = new Scene(root);
@@ -294,23 +398,10 @@ public class MainController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.getIcons().add(new Image(ResourceUtility.getResourceAsStream("assets/Icon.png")));
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void renumber(ActionEvent actionEvent) {
-        List<NodeModel> nodes = list.getItems().stream().
-                flatMap(graphModel -> graphModel.getNodes().stream()).collect(Collectors.toList());
-        for (int i = 0; i < nodes.size(); i++) {
-            nodes.get(i).setId(i);
-        }
-        GenerateUID.setIdCounter(nodes.size());
-        drawPaneController.refresh();
-    }
-
-    public void manualMenu(ActionEvent actionEvent) {
-        showModal(ResourceUtility.getResource("fxml/Help.fxml"), "Help");
     }
 }

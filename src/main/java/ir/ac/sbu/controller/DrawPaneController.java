@@ -3,7 +3,6 @@ package ir.ac.sbu.controller;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import ir.ac.sbu.command.Command;
 import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.command.MakeEdgeCmd;
 import ir.ac.sbu.command.MakeNodeCmd;
@@ -39,12 +38,10 @@ public class DrawPaneController implements RefreshableController {
             graphNode.setOnShiftClick(this::onShiftClick);
             pane.getChildren().add(graphNode);
         }
-
-
     }
 
     private void onShiftClick(MouseEvent mouseEvent) {
-        NodeModel node = ((GraphNode) mouseEvent.getSource()).getNode();
+        NodeModel node = ((GraphNode) mouseEvent.getSource()).getNodeModel();
         if (firstNode == null)
             firstNode = node;
         else {
@@ -63,20 +60,8 @@ public class DrawPaneController implements RefreshableController {
         this.graph = graph;
     }
 
-    public Pane getPane() {
-        return pane;
-    }
-
-    public void setPane(Pane pane) {
-        this.pane = pane;
-    }
-
     public GraphModel getGraph() {
         return graph;
-    }
-
-    public NodeModel getFirstNode() {
-        return firstNode;
     }
 
     public void setFirstNode(NodeModel firstNode) {

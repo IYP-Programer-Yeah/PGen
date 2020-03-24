@@ -11,6 +11,8 @@ public class CheckUtility {
             throw new IllegalArgumentException("Graph name can not be empty.");
         } else if (graphName.contains(DELIMITER)) {
             throw new IllegalArgumentException("Graph can not contain '" + DELIMITER + "' character.");
+        } else if (graphName.contains(" ")) {
+            throw new IllegalArgumentException("Graph can not contain ' ' character.");
         }
     }
 
