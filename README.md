@@ -13,11 +13,7 @@ Following prerequisites are required, depending on your usage.
 
 #### Java
 
-To execute this project you are going to need Java JDK, which you can install via the following command, if you are on a Linux machine.
-
-```
-sudo apt install openjdk-8-jdk
-```
+You need Java JDK to execute this application. This application uses JavaFX library for its UI. The latest version of Java that supports JavaFX is Java v8, so none of the above versions are going to work with this application. If you are on Linux, note that JavaFX is removed from `openjdk-8-jdk` and you must use the version provided by Oracle.
 
 #### Maven
 
