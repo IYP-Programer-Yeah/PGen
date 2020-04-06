@@ -13,8 +13,7 @@ Following prerequisites are required, depending on your usage.
 
 #### Java
 
-To execute this project you need Java JDK. This program written with JavaFX. JavaFX removed after version 8 of java so
-use only java 8 for execution of program. If you use linux, `openjdk-8-jdk` removed JavaFX and you must use oracle version of java.
+You need Java JDK to execute this application. This application uses JavaFX library for its UI. The latest version of Java that supports JavaFX is Java v8, so none of the above versions are going to work with this application. If you are on Linux, note that JavaFX is removed from `openjdk-8-jdk` and you must use the version provided by Oracle.
 
 #### Maven
 
