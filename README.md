@@ -13,11 +13,8 @@ Following prerequisites are required, depending on your usage.
 
 #### Java
 
-To execute this project you are going to need Java JDK, which you can install via the following command, if you are on a Linux machine.
-
-```
-sudo apt install openjdk-8-jdk
-```
+To execute this project you need Java JDK. This program written with JavaFX. JavaFX removed after version 8 of java so
+use only java 8 for execution of program. If you use linux, `openjdk-8-jdk` removed JavaFX and you must use oracle version of java.
 
 #### Maven
 
