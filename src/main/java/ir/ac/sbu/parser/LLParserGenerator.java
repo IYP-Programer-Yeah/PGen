@@ -427,7 +427,7 @@ public class LLParserGenerator {
             if (lastCalculatedFirstSet == null) {
                 // We use DFS to calculate first sets. If in DFS tree, node 'A' was children of itself directly
                 // or indirectly, it means we can move in 'A' infinitely.
-                throw new TableException(nodeModel.getGraph() + " graph call itself recursively: ");
+                throw new TableException(nodeModel.getGraph() + " graph calls itself recursively. Call stack: ");
             }
             return lastCalculatedFirstSet;
         }
