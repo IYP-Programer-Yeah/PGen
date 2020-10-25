@@ -21,12 +21,12 @@ public class DeleteNodeCmd implements Command {
     public void apply() {
         graphModel.getNodes().remove(nodeModel);
         removedEdges = graphModel.getEdges().stream().filter(model -> model.getEnd().equals(nodeModel)).collect(Collectors.toList());
-        graphModel.getNodes().forEach(node -> node.getAdjacent().removeIf(model -> model.getEnd().equals(nodeModel)));
+        graphModel.getNodes().forEach(node -> node.getAdjacentList().removeIf(model -> model.getEnd().equals(nodeModel)));
     }
 
     @Override
     public void rollBack() {
         graphModel.getNodes().add(nodeModel);
-        removedEdges.forEach(edge -> edge.getStart().getAdjacent().add(edge));
+        removedEdges.forEach(edge -> edge.getStart().getAdjacentList().add(edge));
     }
 }

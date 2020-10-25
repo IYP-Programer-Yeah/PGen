@@ -71,7 +71,7 @@ public class SaveLoadService {
                     edge.anchorYProperty().setValue(edgeJSON.getAnchorY());
                     edge.setGraph(edgeJSON.isGraph());
                     edge.setGlobal(edgeJSON.isGlobal());
-                    start.getAdjacent().add(edge);
+                    start.getAdjacentList().add(edge);
 
                 });
                 list.getItems().add(graphModel);

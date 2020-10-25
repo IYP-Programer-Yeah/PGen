@@ -66,7 +66,7 @@ public class NodeModel {
         this.graph = graph;
     }
 
-    public List<EdgeModel> getAdjacent() {
+    public List<EdgeModel> getAdjacentList() {
         return adjacent;
     }
 

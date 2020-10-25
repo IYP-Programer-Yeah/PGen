@@ -13,12 +13,12 @@ public class DeleteEdgeCmd implements Command {
     @Override
     public void apply() {
         NodeModel node = edge.getStart();
-        node.getAdjacent().remove(edge);
+        node.getAdjacentList().remove(edge);
     }
 
     @Override
     public void rollBack() {
         NodeModel node = edge.getStart();
-        node.getAdjacent().add(edge);
+        node.getAdjacentList().add(edge);
     }
 }

@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LLParserGenerator {
+    private static final int eofTokenId = 0;
+
     private List<GraphModel> graphs;
     private Set<String> tokens;
     private Set<String> variables;
@@ -36,6 +38,8 @@ public class LLParserGenerator {
 
     public LLParserGenerator(List<GraphModel> graphs) throws TableException {
         this.graphs = graphs;
+        checkGraphs(graphs);
+
         tokens = graphs.stream()
                 .flatMap(graph -> graph.getEdges().stream())
                 .filter(edge -> !edge.isGraph())
@@ -49,8 +53,7 @@ public class LLParserGenerator {
         Set<String> graphNames = graphs.stream().map(GraphModel::getName).collect(Collectors.toSet());
         variables.addAll(graphNames);
 
-        // checkTokens tokens and variables before continue
-        checkGraphs(graphs);
+        // check tokens and variables before continue
         checkTokens();
 
         variableGraph = graphs.stream().collect(Collectors.toMap(GraphModel::getName, Function.identity(), (o, v) -> o));
@@ -95,7 +98,7 @@ public class LLParserGenerator {
     private void checkTokens() throws TableException {
         List<String> messages = new ArrayList<>();
         tokenAsInt = new HashMap<>();
-        tokenAsInt.put("$", 0);
+        tokenAsInt.put("$", eofTokenId);
         int tokenUID = 1;
         for (String token : tokens) {
             try {
@@ -170,91 +173,114 @@ public class LLParserGenerator {
         }
 
         List<String> messages = new ArrayList<>();
-        int startNode = variableGraph.get(MainController.mainGraphName).getStart().getId();
         for (GraphModel graphModel : graphs) {
             List<NodeModel> finalNodes = graphModel.getNodes().stream().filter(NodeModel::isFinalNode)
                     .collect(Collectors.toList());
             for (NodeModel finalNode : finalNodes) {
                 if (graphModel.getName().equals(MainController.mainGraphName)) {
-                    table[finalNode.getId()][0] = new LLCell(Action.ACCEPT, -1, "", "First"); // Set EOF as accept state
+                    // Set EOF as an accept state.
+                    table[finalNode.getId()][eofTokenId] =
+                            new LLCell(Action.ACCEPT, -1, "", "First");
                 } else {
                     for (String follow : totalFollowSets.get(graphModel.getName())) {
-                        table[finalNode.getId()][tokenAsInt.get(follow)] = new LLCell(Action.REDUCE, tokenAsInt.get(graphModel.getName()), "", "Follow");
+                        table[finalNode.getId()][tokenAsInt.get(follow)] = new LLCell(Action.REDUCE,
+                                tokenAsInt.get(graphModel.getName()), "", "Follow");
                     }
                 }
             }
         }
 
         for (NodeModel node : allNodes) {
-            for (EdgeModel edge : node.getAdjacent()) {
-                int nodeID = node.getId();
+            int nodeID = node.getId();
+            List<EdgeModel> adjacentList = node.getAdjacentList();
+            List<EdgeModel> tokenEdges = adjacentList.stream().filter(x -> !x.isGraph()).collect(Collectors.toList());
+            List<EdgeModel> graphEdges = adjacentList.stream().filter(EdgeModel::isGraph).collect(Collectors.toList());
+            // Note: The list of tokens has a higher priority than the list of sub-graphs, and when moving
+            //       on a graph, even if there is a token in the sub-graphs, the token on the edge is still
+            //       selected to move. So we process list of tokens at first.
+            for (EdgeModel edge : tokenEdges) {
                 int tokenID = tokenAsInt.get(edge.getToken());
-                if (edge.isGraph()) {
-                    int variableStartNodeId = variableGraph.get(edge.getToken()).getStart().getId();
-                    if (table[nodeID][tokenID].getAction() == Action.GOTO) {
-                        messages.add(String.format(
-                                "At node %s: It is impossible to use same graph \"%s\" more than once",
-                                nodeID, edge.getToken()));
-                    }
-                    table[nodeID][tokenID] = new LLCell(Action.GOTO, edge.getEnd().getId(),
-                            edge.getFunction(), edge.getToken());
+                LLCell cell = table[nodeID][tokenID];
+                // Note: It is impossible to pre-set a 'PUSH_GOTO' or 'GOTO' value for a node because we
+                //       are just starting to look at this node and we must have checked the tokens first.
+                //       The possible values for it (except for the error, which is initially set for everyone)
+                //       are only the values of 'REDUCE' and 'SHIFT'.
+                //       In 'REDUCE', our priority is to move on the edge instead of going back to the top graph.
+                //       But when we see 'SHIFT', it means we have seen a letter twice on the edge.
+                if (cell.getAction() == Action.SHIFT) {
+                    messages.add(String.format(
+                            "At node %s: It is impossible to move with token \"%s\" to more than one node (%s and %s)",
+                            nodeID, edge.getToken(), cell.getTarget(), edge.getEnd().getId()));
+                }
+                table[nodeID][tokenID] = new LLCell(Action.SHIFT, edge.getEnd().getId(), edge.getFunction(),
+                        String.valueOf(edge.getEnd().getId()));
+            }
+            for (EdgeModel edge : graphEdges) {
+                int tokenID = tokenAsInt.get(edge.getToken());
+                int subGraphStartNodeId = variableGraph.get(edge.getToken()).getStart().getId();
+                // Note: In all cases we will not return to the top graph if it is possible to move on the
+                //       current graph or go to the sub-graphs. For this reason, the 'REDUCE' mode is not
+                //       checked in the rest of the code of this section, and if necessary, it will be
+                //       replaced with another {@link Action}.
+                // Note: In this case, due to the edge type (sub-graph), the only possible value is 'GOTO'.
+                if (table[nodeID][tokenID].getAction() == Action.GOTO) {
+                    messages.add(String.format(
+                            "At node %s: It is impossible to use same graph \"%s\" more than once",
+                            nodeID, edge.getToken()));
+                }
+                table[nodeID][tokenID] = new LLCell(Action.GOTO, edge.getEnd().getId(),
+                        edge.getFunction(), edge.getToken());
 
-                    Set<String> firstSet = totalFirstSets.get(variableStartNodeId);
-                    for (String first : firstSet) {
-                        int firstTokenId = tokenAsInt.get(first);
-                        LLCell cell = table[nodeID][firstTokenId];
+                // Note: We have to go to this sub-graph for the tokens that can be used
+                //       in it (from the starting point). These tokens are first set of start node.
+                Set<String> firstSet = totalFirstSets.get(subGraphStartNodeId);
+                for (String firstToken : firstSet) {
+                    int firstTokenId = tokenAsInt.get(firstToken);
+                    LLCell cell = table[nodeID][firstTokenId];
+                    // Note: At this point, the only values that can be set for it in previous iteration
+                    //       are the following: 'SHIFT', 'PUSH_GOTO'
+                    if (cell.getAction() == Action.SHIFT) {
+                        // In this case, it means we have an edge with the same token. Because we decide
+                        // to prefer moving on the current graph to going sub-graphs, we skip this token.
+                        continue;
+                    } else if (cell.getAction() == Action.PUSH_GOTO) {
+                        messages.add(String.format(
+                                "At node %s: It is impossible to move with token \"%s\" to more than one graph" +
+                                        " (\"%s\" or \"%s\")",
+                                nodeID, firstToken, cell.getHelperValue(), edge.getToken()));
+                    }
+                    table[nodeID][firstTokenId] = new LLCell(Action.PUSH_GOTO, subGraphStartNodeId, "",
+                            edge.getToken());
+                }
+
+                // Check special case (When edge contains an nullable variable which means that we can
+                // pass through it without consuming tokens)
+                if (nullableVariables.contains(edge.getToken())) {
+                    for (String follow : totalFollowSets.get(edge.getToken())) {
+                        int followTokenId = tokenAsInt.get(follow);
+                        LLCell cell = table[nodeID][followTokenId];
+                        // Note: At this point, the only values that can be set for it in previous iteration
+                        //       are the following: 'SHIFT', 'PUSH_GOTO'
                         if (cell.getAction() == Action.SHIFT) {
-                            messages.add(String.format(
-                                    "At node %s: It is impossible to move with token \"%s\" to node %s or go to the " +
-                                            "graph \"%s\" and moving with that token",
-                                    nodeID, first, cell.getHelperValue(), edge.getToken()));
+                            // In this case, it means we have an edge with the same token. (assume token X)
+                            // I can cross a node without taking a token and then move with an X token.
+                            // At the same time, we can move from the edge with the X token right now.
+                            // Because our priority is to move on the current graph, we move from the
+                            // edge with token X. In fact, the edge that does not consume any tokens is a
+                            // sub-graph that we enter and return without consuming anything. But our intention
+                            // is to move on the current graph before entering a sub-graph.
+                            continue;
                         } else if (cell.getAction() == Action.PUSH_GOTO) {
                             messages.add(String.format(
-                                    "At node %s: It is impossible to move with token \"%s\" to more than one graph" +
-                                            " (\"%s\" or \"%s\")",
-                                    nodeID, first, cell.getHelperValue(), edge.getToken()));
+                                    "At node %s: It is possible to move to node %s with edge \"%s\" without " +
+                                            "consuming any token. So we can move with token \"%s\" to " +
+                                            "graph \"%s\" or move with it on node \"%s\".",
+                                    nodeID, edge.getEnd().getId(), edge.getToken(), follow,
+                                    cell.getHelperValue(), edge.getEnd().getId()));
                         }
-                        table[nodeID][firstTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "",
+                        table[nodeID][followTokenId] = new LLCell(Action.PUSH_GOTO, subGraphStartNodeId, "",
                                 edge.getToken());
                     }
-
-                    if (nullableVariables.contains(edge.getToken())) {
-                        for (String follow : totalFollowSets.get(edge.getToken())) {
-                            int followTokenId = tokenAsInt.get(follow);
-                            LLCell cell = table[nodeID][followTokenId];
-                            if (cell.getAction() == Action.SHIFT) {
-                                messages.add(String.format(
-                                        "At node %s: It is possible to move to node %s with edge \"%s\" without " +
-                                                "consuming any token. It is impossible to move with token \"%s\" to " +
-                                                "node %s or move with token on node %s.",
-                                        nodeID, edge.getEnd().getId(), edge.getToken(), follow,
-                                        cell.getHelperValue(), edge.getEnd().getId()));
-                            } else if (cell.getAction() == Action.PUSH_GOTO) {
-                                messages.add(String.format(
-                                        "At node %s: It is possible to move to node %s with edge \"%s\" without " +
-                                                "consuming any token. It is impossible to move with token \"%s\" to " +
-                                                "graph %s or move with token on node %s.",
-                                        nodeID, edge.getEnd().getId(), edge.getToken(), follow,
-                                        cell.getHelperValue(), edge.getEnd().getId()));
-                            }
-                            table[nodeID][followTokenId] = new LLCell(Action.PUSH_GOTO, variableStartNodeId, "",
-                                    edge.getToken());
-                        }
-                    }
-                } else {
-                    LLCell cell = table[nodeID][tokenID];
-                    if (cell.getAction() == Action.PUSH_GOTO) {
-                        messages.add(String.format(
-                                "At node %s: It is impossible to move with token \"%s\" to node %s or go to the " +
-                                        "graph \"%s\" and moving with that token",
-                                nodeID, edge.getToken(), edge.getEnd().getId(), cell.getHelperValue()));
-                    } else if (cell.getAction() == Action.SHIFT) {
-                        messages.add(String.format(
-                                "At node %s: It is impossible to move with token \"%s\" to more than one node (%s and %s)",
-                                nodeID, edge.getToken(), cell.getTarget(), edge.getEnd().getId()));
-                    }
-                    table[nodeID][tokenID] = new LLCell(Action.SHIFT, edge.getEnd().getId(), edge.getFunction(),
-                            String.valueOf(edge.getEnd().getId()));
                 }
             }
         }
@@ -263,6 +289,7 @@ public class LLParserGenerator {
             throw new TableException(messages);
         }
 
+        int startNode = variableGraph.get(MainController.mainGraphName).getStart().getId();
         return new Pair<>(table, startNode);
     }
 
@@ -391,7 +418,7 @@ public class LLParserGenerator {
         do {
             lastSize = nullableNodes.size();
             for (NodeModel nodeModel : allNodes) {
-                for (EdgeModel edgeModel : nodeModel.getAdjacent()) {
+                for (EdgeModel edgeModel : nodeModel.getAdjacentList()) {
                     if (edgeModel.isGraph()) {
                         int idOfVariableStartNode = variableGraph.get(edgeModel.getToken()).getStart().getId();
                         if (nullableNodes.contains(idOfVariableStartNode) && nullableNodes.contains(edgeModel.getEnd().getId())) {
@@ -421,7 +448,7 @@ public class LLParserGenerator {
     }
 
     private Set<String> calculateFirstSet(Map<Integer, Set<String>> firstSets, Set<Integer> visited,
-            NodeModel nodeModel) throws TableException {
+                                          NodeModel nodeModel) throws TableException {
         if (visited.contains(nodeModel.getId())) {
             Set<String> lastCalculatedFirstSet = firstSets.get(nodeModel.getId());
             if (lastCalculatedFirstSet == null) {
@@ -440,7 +467,7 @@ public class LLParserGenerator {
         first{N1} += first{C} + (first{N2} | if C is a variable and C is nullable)
         if C is nullable and N1 == N2 (C is a loop), then first{N1} += first{C}
          */
-        for (EdgeModel edgeModel : nodeModel.getAdjacent()) {
+        for (EdgeModel edgeModel : nodeModel.getAdjacentList()) {
             if (edgeModel.isGraph()) {
                 try {
                     Set<String> firstSetOfGraph = calculateFirstSet(firstSets, visited,
