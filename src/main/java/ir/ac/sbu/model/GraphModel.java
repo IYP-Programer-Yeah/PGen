@@ -36,7 +36,7 @@ public class GraphModel {
         }
 
         for (NodeModel node : nodes) {
-            for (EdgeModel edgeModel : node.getAdjacent()) {
+            for (EdgeModel edgeModel : node.getAdjacentList()) {
                 NodeModel startNode = mapBetweenLastAndNewId.get(edgeModel.getStart().getId());
                 EdgeModel newEdgeModel = new EdgeModel(startNode, mapBetweenLastAndNewId.get(edgeModel.getEnd().getId()));
                 newEdgeModel.setToken(edgeModel.getToken());
@@ -45,7 +45,7 @@ public class GraphModel {
                 newEdgeModel.setAnchorY(edgeModel.getAnchorY());
                 newEdgeModel.setGraph(edgeModel.isGraph());
                 newEdgeModel.setGlobal(edgeModel.isGlobal());
-                startNode.getAdjacent().add(newEdgeModel);
+                startNode.getAdjacentList().add(newEdgeModel);
             }
         }
         return graphModel;
@@ -88,6 +88,6 @@ public class GraphModel {
     }
 
     public List<EdgeModel> getEdges() {
-        return nodes.stream().map(NodeModel::getAdjacent).flatMap(Collection::stream).collect(Collectors.toList());
+        return nodes.stream().map(NodeModel::getAdjacentList).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

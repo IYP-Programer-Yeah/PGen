@@ -26,7 +26,7 @@ public class DrawPaneController implements RefreshableController {
         pane.getChildren().clear();
 
         for (NodeModel nodeModel : graph.getNodes()) {
-            for (EdgeModel edge : nodeModel.getAdjacent()) {
+            for (EdgeModel edge : nodeModel.getAdjacentList()) {
                 BoundLine line = new BoundLine(edge);
                 pane.getChildren().addAll(line, line.getAnchor(), line.getText(), line.getArrowEnd());
                 line.toBack();

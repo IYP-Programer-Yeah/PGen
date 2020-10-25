@@ -14,12 +14,12 @@ public class MakeEdgeCmd implements Command {
 
     @Override
     public void apply() {
-        start.getAdjacent().add(edge);
+        start.getAdjacentList().add(edge);
     }
 
     @Override
 
     public void rollBack() {
-        start.getAdjacent().remove(edge);
+        start.getAdjacentList().remove(edge);
     }
 }
