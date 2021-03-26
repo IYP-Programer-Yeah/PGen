@@ -1,5 +1,7 @@
 package ir.ac.sbu.controller;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import ir.ac.sbu.Main;
 import ir.ac.sbu.command.CommandManager;
 import ir.ac.sbu.exception.TableException;
@@ -12,25 +14,8 @@ import ir.ac.sbu.utility.CheckUtility;
 import ir.ac.sbu.utility.DialogUtility;
 import ir.ac.sbu.utility.GenerateUID;
 import ir.ac.sbu.utility.ResourceUtility;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,10 +26,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MainController {
+
     @FXML
     private ListView<GraphModel> graphList;
     @FXML
@@ -103,8 +109,10 @@ public class MainController {
 
         graphList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
-            drawPaneController.setGraph(newValue);
-            drawPaneController.refresh();
+            if (newValue != null) {
+                drawPaneController.setGraph(newValue);
+                drawPaneController.refresh();
+            }
         });
 
         graphList.setCellFactory(param ->
@@ -336,7 +344,8 @@ public class MainController {
     }
 
     private void fileNew(ActionEvent actionEvent) {
-        String dialogString = lastChosenFileForSave != null ? "Do you want to save changes?" : "Do you want to save changes to a file?";
+        String dialogString = lastChosenFileForSave != null ? "Do you want to save changes?"
+                : "Do you want to save changes to a file?";
         Optional<ButtonType> result = DialogUtility.showConfirmationDialog("PGEN", dialogString);
         if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) {
             return;
@@ -357,9 +366,16 @@ public class MainController {
     private void fileOpen(ActionEvent actionEvent) {
         File selectedFile = DialogUtility.showOpenDialog(pane.getScene().getWindow(), "*.pgs");
         if (selectedFile != null) {
-            SaveLoadService exportService = new SaveLoadService(selectedFile);
-            exportService.load(graphList);
-            drawPaneController.setGraph(graphList.getItems().get(0));
+            List<GraphModel> graphList;
+            try {
+                graphList = SaveLoadService.load(selectedFile);
+            } catch (FileNotFoundException e) {
+                DialogUtility.showErrorDialog("Unable to find file: " + selectedFile.getPath(), e.toString());
+                return;
+            }
+
+            drawPaneController.setGraph(graphList.get(0));
+            graphs.setAll(graphList);
             drawPaneController.refresh();
             lastChosenFileForSave = selectedFile;
         }
@@ -386,8 +402,7 @@ public class MainController {
 
     private void saveGraphs(File file) {
         parserRenumber(null);
-        SaveLoadService exportService = new SaveLoadService(file);
-        exportService.save(graphs);
+        SaveLoadService.save(graphs, file);
     }
 
     public void helpAbout(ActionEvent actionEvent) {
@@ -432,7 +447,8 @@ public class MainController {
     }
 
     private void setOnCloseRequest(WindowEvent event) {
-        String dialogString = lastChosenFileForSave != null ? "Do you want to save changes?" : "Do you want to save changes to a file?";
+        String dialogString = lastChosenFileForSave != null ? "Do you want to save changes?"
+                : "Do you want to save changes to a file?";
         Optional<ButtonType> result = DialogUtility.showConfirmationDialog("PGEN", dialogString);
         if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)
                 // Although we have considered the user to cancel after the dialog is displayed,
