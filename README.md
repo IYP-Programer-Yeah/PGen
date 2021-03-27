@@ -58,4 +58,4 @@ Right Click on edge's name for deleting or changing parameteres.
 * **Amin Borjian** - [github](https://github.com/Borjianamin98)
 * **Hamid Montazeri** - [github](https://github.com/hamidhandid)
 
-See also the list of [contributors](https://github.com/Borjianamin98/PGen/graphs/contributors) who participated in this project.
+See also the list of [contributors](graphs/contributors) who participated in this project.
