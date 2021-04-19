@@ -102,8 +102,9 @@ public class LLParserGenerator {
                     messages.add(String.format("Invalid token: start-node = %s end-node = %s error = %s",
                             edge.getStart().getId(), edge.getEnd().getId(), e.getMessage()));
                 }
-                tokenAsInt.put(token, tokenUID);
-                tokenUID++;
+                if (tokenAsInt.putIfAbsent(token, tokenUID) == null) {
+                    tokenUID++;
+                }
             }
         }
 
